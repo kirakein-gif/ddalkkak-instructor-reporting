@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/icon.svg" width="220" alt="딸깍 방과후강사 신고자료">
+  <img src="assets/icon.png" width="220" alt="딸깍 방과후강사 신고자료">
 </p>
 
 # 딸깍 방과후강사 신고자료
