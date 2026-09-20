@@ -1,0 +1,15 @@
+{
+  "app": "Ddalkkak Instructor Reporting",
+  "version": "0.2.0",
+  "released": "2026-09-20",
+  "developer": "나대현",
+  "organization": "천안버들유치원",
+  "notes": [
+    "딸깍 공통 브랜드 헤더 적용",
+    "기관 기본정보 상단 배치 및 접기·펼치기",
+    "기관 주소 항목 제거",
+    "광역단체 → 관할 세무서 2단계 오프라인 선택",
+    "세무서 코드 자동 입력",
+    "동일 사이트 version.json 기반 버전 확인"
+  ]
+}
