@@ -16,6 +16,8 @@
 
 .org-card{grid-column:1/-1}.org-top-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr);gap:14px}.org-summary-box{border:1px solid #dce6f5;background:linear-gradient(135deg,#f8fbff,#f2f7ff);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;justify-content:center}.org-summary-title{font-size:11px;font-weight:900;color:#6c7a91;letter-spacing:.5px}.org-summary-main{font-size:16px;font-weight:900;color:#21314f;margin-top:5px}.org-summary-sub{font-size:12px;color:#66748a;margin-top:5px}.org-actions{margin-top:13px}.org-details{overflow:hidden;max-height:1200px;opacity:1;margin-top:17px;border-top:1px solid var(--line);padding-top:17px;transition:max-height .28s ease,opacity .2s ease,margin .28s ease,padding .28s ease}.org-details.collapsed{max-height:0;opacity:0;margin-top:0;padding-top:0;border-top-color:transparent;pointer-events:none}.address-row{display:flex;gap:8px}.address-row input{flex:1}.address-btn{flex:0 0 auto;white-space:nowrap}.verify-tax-btn{width:100%;border:1px solid #b9d5c8;background:#effbf6;color:#087a54;border-radius:11px;padding:10px 11px;font-weight:800;cursor:pointer}.verify-tax-btn:hover{background:#e4f8ef}.tax-office-status{border-radius:11px;padding:10px 12px;font-size:12px;font-weight:700}.tax-office-status.idle{background:#f6f8fb;color:#64748b}.tax-office-status.ok{background:#ecfdf5;color:#087a54;border:1px solid #c8efe0}.tax-office-status.warn{background:#fff8e8;color:#9a6500;border:1px solid #f4deb0}.tax-office-status.bad{background:#fff1f2;color:#b4232b;border:1px solid #f3c8cd}.tax-check-field{display:flex;flex-direction:column;justify-content:flex-end}@media(max-width:850px){.org-top-grid{grid-template-columns:1fr}.org-summary-box{min-height:90px}}@media(max-width:560px){.address-row{flex-direction:column}.address-btn{width:100%}}
 
+
+.version-check{border:0;background:transparent;color:#5f6f89;font-size:11px;font-weight:800;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}.version-check.update{color:#c2410c}.version-check.ok{color:#087a54}.dev-credit{color:#64748b;font-weight:800}
 </style>
 </head>
 <body>
@@ -32,13 +34,13 @@
       </div>
       <p class="hero-copy">소득자료 엑셀 넣고, 딸깍. 원천세 · 간이지급명세서 · 노무제공자 신고자료를 한 번에 생성합니다.</p>
     </div>
-    <button id="privacyToggle" class="privacy-pill">🔒 서버 전송 없음</button>
+    <button id="privacyToggle" class="privacy-pill">🔒 입력자료 외부 전송 없음</button>
   </header>
-  <div class="privacy-panel"><b>개인정보 보호 모드</b><br>선택한 Excel과 주민등록번호는 이 브라우저의 메모리에서만 읽습니다. 이 파일에는 서버 전송 코드가 없고 외부 CDN도 사용하지 않습니다. 새로고침 또는 「개인정보 메모리 비우기」를 누르면 불러온 명단 데이터가 사라집니다. 기관 기본정보도 자동 저장하지 않으며, 사용자가 저장한 기관정보 파일을 다음 달에 다시 불러오는 방식입니다.</div>
+  <div class="privacy-panel"><b>개인정보 보호 모드</b><br>선택한 소득자료·강사명단·주민등록번호는 이 브라우저 메모리에서만 처리하며 외부로 전송하지 않습니다. 외부 API·외부 CDN을 사용하지 않습니다. 기관 기본정보도 자동 저장하지 않으며 사용자가 저장한 기관정보 파일을 다시 불러오는 방식입니다. 버전 확인은 같은 사이트의 <b>version.json</b>만 조회하며 입력자료는 전송하지 않습니다.</div>
 
   <main class="grid">
     <section class="card org-card">
-      <div class="step org-step"><span class="num-circle">01</span><div><h2>기관 기본정보</h2><div class="desc">매월 반복 입력하지 않도록 기관정보 파일을 먼저 불러옵니다. 주소를 기준으로 관할 세무서를 자동 판정합니다.</div></div></div>
+      <div class="step org-step"><span class="num-circle">01</span><div><h2>기관 기본정보</h2><div class="desc">매월 반복 입력하지 않도록 기관정보 파일을 먼저 불러옵니다. 광역단체를 고른 뒤 관할 세무서를 선택하면 코드가 자동 입력됩니다.</div></div></div>
       <div class="org-top-grid">
         <div class="drop org-file-drop">
           <input id="cfgFile" type="file" accept=".json,.ddkorg">
@@ -63,15 +65,21 @@
           <div class="field"><label>대표자명 *</label><input id="ceoName" placeholder="대표자 성명"></div>
           <div class="field"><label>홈택스 ID *</label><input id="hometaxID" autocomplete="off" placeholder="전자신고용 ID"></div>
 
-          <div class="field span4"><label>학교·기관 주소 *</label>
-            <div class="address-row"><input id="schoolAddress" placeholder="예) 충청남도 아산시 배방읍 ○○로 00"><button id="findTaxOfficeBtn" type="button" class="smallbtn address-btn">관할 세무서 자동찾기</button></div>
-            <div class="hint">주소는 서버로 전송하지 않고 이 브라우저 안에서만 관할구역을 판정합니다.</div>
+          <div class="field"><label>광역단체 *</label>
+            <select id="taxRegion">
+              <option value="">시·도 선택</option>
+              <option>서울특별시</option><option>부산광역시</option><option>대구광역시</option><option>인천광역시</option>
+              <option>광주광역시</option><option>대전광역시</option><option>울산광역시</option><option>세종특별자치시</option>
+              <option>경기도</option><option>강원특별자치도</option><option>충청북도</option><option>충청남도</option>
+              <option>전북특별자치도</option><option>전라남도</option><option>경상북도</option><option>경상남도</option><option>제주특별자치도</option>
+            </select>
           </div>
-
-          <div class="field span2"><label>관할 세무서</label><input id="taxOfficeName" placeholder="주소 입력 시 자동 설정"></div>
-          <div class="field"><label>세무서 코드 *</label><input id="taxOffice" inputmode="numeric" maxlength="3" placeholder="3자리"></div>
-          <div class="field tax-check-field"><label>관할 확인</label><button id="openNtsTaxSearch" type="button" class="verify-tax-btn">국세청에서 확인 ↗</button></div>
-          <div class="field span4"><div id="taxOfficeStatus" class="tax-office-status idle">주소를 입력하면 관할 세무서를 자동으로 확인합니다.</div></div>
+          <div class="field span2"><label>관할 세무서 *</label>
+            <select id="taxOfficeSelect" disabled><option value="">광역단체를 먼저 선택하세요</option></select>
+            <div class="hint">국세청 전국 세무관서 기준 목록입니다. 광역단체는 목록을 좁히기 위한 1차 선택이며 최종 관할 세무서를 확인해 선택하세요.</div>
+          </div>
+          <div class="field"><label>세무서 코드</label><input id="taxOffice" inputmode="numeric" maxlength="3" placeholder="자동 입력" readonly></div>
+          <input id="taxOfficeName" type="hidden">
 
           <div class="field"><label>담당자 부서</label><input id="dept" placeholder="예) 행정실"></div>
           <div class="field"><label>담당자 성명</label><input id="manager" placeholder="예) 홍길동"></div>
@@ -116,7 +124,7 @@
     <section id="outputBox" class="card outputs hidden"><div class="output-top"><div><h2>생성 완료</h2><div id="outputSummary" class="output-summary"></div></div><button id="zipAll" class="zipbtn">3종 ZIP 한 번에 받기</button></div><div id="outputList" class="output-list"></div></section>
   </main>
 
-  <footer class="foot"><span>Ddalkkak Instructor Reporting · 방과후강사 신고자료 v0.1 local</span><button id="wipeAll" class="danger-link">개인정보 메모리 비우기</button></footer>
+  <footer class="foot"><span>Ddalkkak Instructor Reporting · <button id="versionCheck" class="version-check">v0.2.0 · 버전 확인</button> · <span class="dev-credit">DEV 나대현 · 천안버들유치원</span></span><button id="wipeAll" class="danger-link">개인정보 메모리 비우기</button></footer>
 </div>
 
 <div id="unlockModal" class="modal hidden"><div class="modalbox"><h3>🔐 암호화 강사명단 열기</h3><p>비밀번호는 이 브라우저 안에서만 복호화에 사용되며 저장되지 않습니다.</p><input id="unlockPw" type="password" autocomplete="current-password" placeholder="비밀번호"><div id="unlockMsg" class="modalmsg"></div><div class="modal-actions"><button id="cancelUnlock" class="smallbtn">취소</button><button id="unlockVault" class="primary-small">명단 열기</button></div></div></div>
@@ -140,6 +148,10 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 <script>
 
 'use strict';
+
+const APP_VERSION='0.2.0';
+const APP_DEVELOPER='나대현';
+const APP_ORGANIZATION='천안버들유치원';
 
 const state = {
   incomes: [],
@@ -425,151 +437,120 @@ function concatEncodedLines(lines) {
 }
 
 
-// ---------- Tax office auto-detection (offline) ----------
-const NTS_TAX_SEARCH_URL='https://www.nts.go.kr/nts/taxSrch/taxSrchPage.do?mi=6761';
-function normAddress(v){
-  let a=String(v||'').trim().replace(/\s+/g,' ');
-  const reps=[
-    [/^서울(?!특별시)/,'서울특별시'],[/^부산(?!광역시)/,'부산광역시'],[/^대구(?!광역시)/,'대구광역시'],[/^인천(?!광역시)/,'인천광역시'],[/^대전(?!광역시)/,'대전광역시'],[/^울산(?!광역시)/,'울산광역시'],
-    [/^세종(?!특별자치시)/,'세종특별자치시'],[/^경기(?!도)/,'경기도'],[/^강원(?!특별자치도)/,'강원특별자치도'],[/^충북/,'충청북도'],[/^충남/,'충청남도'],[/^전북(?!특별자치도)/,'전북특별자치도'],
-    [/^경북/,'경상북도'],[/^경남/,'경상남도'],[/^제주(?!특별자치도)/,'제주특별자치도'],[/^광주광역시/,'전남광주통합특별시'],[/^전라남도/,'전남광주통합특별시']
-  ];
-  reps.forEach(([r,t])=>a=a.replace(r,t));
-  return a;
-}
-const TAX=(name,code)=>({name,code:String(code)});
-function detectTaxOffice(address){
-  const a=normAddress(address); if(a.length<4) return null;
-  const has=(...xs)=>xs.some(x=>a.includes(x));
-  // 서울 세부 관할
-  if(has('서울특별시 강남구')){
-    if(has('신사동','논현동','압구정동','청담동')) return TAX('강남세무서','211');
-    if(has('역삼동','도곡동')) return TAX('역삼세무서','220');
-    return TAX('삼성세무서','120');
-  }
-  if(has('서울특별시 서초구')) return has('잠원동','반포동','방배동')?TAX('반포세무서','114'):TAX('서초세무서','214');
-  if(has('서울특별시 송파구')) return has('잠실동','신천동','풍납동','삼전동','방이동','오금동')?TAX('잠실세무서','230'):TAX('송파세무서','215');
-  if(has('서울특별시 도봉구')) return has('창동')?TAX('노원세무서','217'):TAX('도봉세무서','210');
-  if(has('서울특별시 영등포구')) return has('대림동','도림동','신길동')?TAX('동작세무서','108'):TAX('영등포세무서','107');
-  if(has('서울특별시 중구')){
-    const nd=['남대문로 1가','남대문로1가','남대문로 3가','남대문로3가','남대문로 4가','남대문로4가','남대문로 5가','남대문로5가','을지로 1가','을지로1가','을지로 2가','을지로2가','을지로 3가','을지로3가','을지로 4가','을지로4가','을지로 5가','을지로5가','주교동','삼각동','수하동','장교동','수표동','저동','입정동','산림동','무교동','다동','북창동','남창동','봉래동','회현동','소공동','태평로','서소문동','정동','순화동','의주로','중림동','만리동','충정로1가'];
-    return nd.some(x=>a.includes(x))?TAX('남대문세무서','104'):TAX('중부세무서','201');
-  }
-  const seoul=[
-    ['종로구','종로세무서','101'],['용산구','용산세무서','106'],['성동구','성동세무서','206'],['광진구','성동세무서','206'],['성북구','성북세무서','209'],['강북구','도봉세무서','210'],['노원구','노원세무서','217'],['중랑구','중랑세무서','146'],['동대문구','동대문세무서','204'],['서대문구','서대문세무서','110'],['은평구','은평세무서','147'],['마포구','마포세무서','105'],['강서구','강서세무서','109'],['구로구','구로세무서','113'],['금천구','금천세무서','119'],['양천구','양천세무서','117'],['동작구','동작세무서','108'],['관악구','관악세무서','145'],['강동구','강동세무서','212']
-  ]; if(has('서울특별시')) for(const [r,n,c] of seoul) if(has(r)) return TAX(n,c);
+// ---------- Tax office selector (offline) ----------
+const TAX_OFFICES_BY_REGION = {
+  '서울특별시': [
+    ['강남세무서','211'],['강동세무서','212'],['강서세무서','109'],['관악세무서','145'],['구로세무서','113'],['금천세무서','119'],
+    ['남대문세무서','104'],['노원세무서','217'],['도봉세무서','210'],['동대문세무서','204'],['동작세무서','108'],['마포세무서','105'],
+    ['반포세무서','114'],['삼성세무서','120'],['서대문세무서','110'],['서초세무서','214'],['성동세무서','206'],['성북세무서','209'],
+    ['송파세무서','215'],['양천세무서','117'],['역삼세무서','220'],['영등포세무서','107'],['용산세무서','106'],['은평세무서','147'],
+    ['잠실세무서','230'],['종로세무서','101'],['중랑세무서','146'],['중부세무서','201']
+  ],
+  '부산광역시': [
+    ['금정세무서','621'],['동래세무서','607'],['부산강서세무서','625'],['부산진세무서','605'],['북부산세무서','606'],
+    ['서부산세무서','603'],['수영세무서','617'],['중부산세무서','602'],['해운대세무서','623']
+  ],
+  '대구광역시': [
+    ['남대구세무서','514'],['동대구세무서','502'],['북대구세무서','504'],['서대구세무서','503'],['수성세무서','516'],
+    ['안동세무서','508','군위군 관할']
+  ],
+  '인천광역시': [
+    ['계양세무서','154'],['남동세무서','131'],['부평세무서','122'],['서인천세무서','137'],['연수세무서','150'],['인천세무서','121'],
+    ['김포세무서','234','강화군 관할']
+  ],
+  '광주광역시': [
+    ['광산세무서','419'],['광주세무서','408'],['북광주세무서','409'],['서광주세무서','410']
+  ],
+  '대전광역시': [
+    ['대전세무서','305'],['북대전세무서','318'],['서대전세무서','314']
+  ],
+  '울산광역시': [
+    ['동울산세무서','620'],['울산세무서','610']
+  ],
+  '세종특별자치시': [
+    ['세종세무서','320']
+  ],
+  '경기도': [
+    ['경기광주세무서','233'],['고양세무서','128'],['광명세무서','235'],['구리세무서','149'],['기흥세무서','236'],['김포세무서','234'],
+    ['남부천세무서','152'],['남양주세무서','132'],['동고양세무서','232'],['동안산세무서','153'],['동안양세무서','138'],['동수원세무서','135'],
+    ['동화성세무서','151'],['부천세무서','130'],['분당세무서','144'],['성남세무서','129'],['수원세무서','124'],['시흥세무서','140'],
+    ['안산세무서','134'],['안양세무서','123'],['용인세무서','142'],['의정부세무서','127'],['이천세무서','126'],['파주세무서','141'],
+    ['평택세무서','125'],['포천세무서','231'],['화성세무서','143']
+  ],
+  '강원특별자치도': [
+    ['강릉세무서','226'],['삼척세무서','222'],['속초세무서','227'],['영월세무서','225'],['원주세무서','224'],['춘천세무서','221'],['홍천세무서','223'],
+    ['포천세무서','231','철원군 관할']
+  ],
+  '충청북도': [
+    ['동청주세무서','317'],['영동세무서','302'],['제천세무서','304'],['청주세무서','301'],['충주세무서','303']
+  ],
+  '충청남도': [
+    ['공주세무서','307'],['논산세무서','308'],['보령세무서','313'],['서산세무서','316'],['아산세무서','319'],['예산세무서','311'],
+    ['천안세무서','312'],['홍성세무서','310'],['대전세무서','305','금산군 관할']
+  ],
+  '전북특별자치도': [
+    ['군산세무서','401'],['남원세무서','407'],['북전주세무서','418'],['익산세무서','403'],['전주세무서','402'],['정읍세무서','404']
+  ],
+  '전라남도': [
+    ['광산세무서','419','영광군 관할'],['광주세무서','408','곡성군·화순군 관할'],['나주세무서','412'],['목포세무서','411'],
+    ['북광주세무서','409','장성군·담양군 관할'],['순천세무서','416'],['여수세무서','417'],['해남세무서','415']
+  ],
+  '경상북도': [
+    ['경산세무서','515'],['경주세무서','505'],['구미세무서','513'],['김천세무서','510'],['상주세무서','511'],['안동세무서','508'],
+    ['영덕세무서','507'],['영주세무서','512'],['포항세무서','506'],['서대구세무서','503','고령군 관할']
+  ],
+  '경상남도': [
+    ['거창세무서','611'],['김해세무서','615'],['마산세무서','608'],['양산세무서','624'],['진주세무서','613'],['창원세무서','609'],['통영세무서','612']
+  ],
+  '제주특별자치도': [
+    ['제주세무서','616']
+  ]
+};
 
-  // 인천·경기
-  if(has('경기도 부천시')){
-    if(has('소사구','계수동','괴안동','범박동','심곡본동','송내동','소사본동','옥길동','심곡동','소사동','원미동','역곡동','춘의동')) return TAX('남부천세무서','152');
-    if(has('오정구','고강동','내동','대장동','삼정동','여월동','오정동','원종동','작동','도당동','상동','약대동','중동')) return TAX('부천세무서','130');
-    return {name:'부천/남부천세무서',code:'',ambiguous:true};
+function findTaxOfficeByCode(code){
+  code=digits(code).slice(0,3);
+  for(const [region,list] of Object.entries(TAX_OFFICES_BY_REGION)){
+    const office=list.find(x=>x[1]===code);
+    if(office) return {region,name:office[0],code:office[1],note:office[2]||''};
   }
-  if(has('경기도 고양시')) return has('덕양구')?TAX('동고양세무서','232'):TAX('고양세무서','128');
-  if(has('경기도 안산시')) return has('상록구')?TAX('동안산세무서','153'):TAX('안산세무서','134');
-  if(has('경기도 안양시')) return has('동안구')?TAX('동안양세무서','138'):TAX('안양세무서','123');
-  if(has('경기도 수원시')) return (has('영통구','권선동','곡반정동'))?TAX('동수원세무서','135'):TAX('수원세무서','124');
-  if(has('경기도 성남시')) return has('분당구')?TAX('분당세무서','144'):TAX('성남세무서','129');
-  if(has('경기도 용인시')) return has('기흥구')?TAX('기흥세무서','236'):TAX('용인세무서','142');
-  if(has('경기도 화성시','경기도 화성특례시')){
-    if(has('동탄구','병점구','정남면','기배동','기안동','배양동','오산시')) return TAX('동화성세무서','151');
-    if(has('만세구','향남읍','우정읍','남양읍','팔탄면','양감면','장안면','마도면','송산면','서신면','새솔동','봉담읍','매송면','비봉면')) return TAX('화성세무서','143');
-    return {name:'화성/동화성세무서',code:'',ambiguous:true};
-  }
-  if(has('경기도 남양주시')){
-    if(has('별내','퇴계원','일패','이패','삼패','다산','수석','지금','도농','와부','조안')) return TAX('구리세무서','149');
-    return TAX('남양주세무서','132');
-  }
-  const gi=[
-    ['경기도 광명시','광명세무서','235'],['경기도 김포시','김포세무서','234'],['경기도 파주시','파주세무서','141'],['경기도 의정부시','의정부세무서','127'],['경기도 양주시','의정부세무서','127'],['경기도 포천시','포천세무서','231'],['경기도 동두천시','포천세무서','231'],['경기도 연천군','포천세무서','231'],['경기도 구리시','구리세무서','149'],['경기도 가평군','남양주세무서','132'],['경기도 시흥시','시흥세무서','140'],['경기도 과천시','동안양세무서','138'],['경기도 의왕시','동안양세무서','138'],['경기도 군포시','안양세무서','123'],['경기도 오산시','동화성세무서','151'],['경기도 평택시','평택세무서','125'],['경기도 안성시','평택세무서','125'],['경기도 광주시','경기광주세무서','233'],['경기도 하남시','경기광주세무서','233'],['경기도 이천시','이천세무서','126'],['경기도 여주시','이천세무서','126'],['경기도 양평군','이천세무서','126']
-  ]; for(const [r,n,c] of gi) if(has(r)) return TAX(n,c);
-  const inch=[
-    ['계양구','계양세무서','154'],['남동구','남동세무서','131'],['부평구','부평세무서','122'],['서해구','서인천세무서','137'],['검단구','서인천세무서','137'],['서구','서인천세무서','137'],['연수구','연수세무서','150'],['제물포구','인천세무서','121'],['미추홀구','인천세무서','121'],['옹진군','인천세무서','121'],['영종구','인천세무서','121'],['중구','인천세무서','121'],['강화군','김포세무서','234']
-  ]; if(has('인천광역시')) for(const [r,n,c] of inch) if(has(r)) return TAX(n,c);
-
-  // 강원
-  if(has('강원특별자치도 철원군')) return TAX('포천세무서','231');
-  if(has('강원특별자치도 평창군')){
-    if(has('대관령면','진부면','용평면')) return TAX('강릉세무서','226');
-    if(has('봉평면','대화면','방림면')) return TAX('원주세무서','224');
-    return {name:'강릉/영월/원주세무서',code:'',ambiguous:true};
-  }
-  if(has('강원특별자치도 정선군')) return has('임계면')?TAX('강릉세무서','226'):TAX('영월세무서','225');
-  const gw=[
-    ['강릉시','강릉세무서','226'],['삼척시','삼척세무서','222'],['동해시','삼척세무서','222'],['태백시','삼척세무서','222'],['속초시','속초세무서','227'],['고성군','속초세무서','227'],['양양군','속초세무서','227'],['영월군','영월세무서','225'],['원주시','원주세무서','224'],['횡성군','원주세무서','224'],['춘천시','춘천세무서','221'],['화천군','춘천세무서','221'],['양구군','춘천세무서','221'],['홍천군','홍천세무서','223'],['인제군','홍천세무서','223']
-  ]; if(has('강원특별자치도')) for(const [r,n,c] of gw) if(has(r)) return TAX(n,c);
-
-  // 대전·세종·충청
-  const cc=[
-    ['대전광역시 유성구','북대전세무서','318'],['대전광역시 대덕구','북대전세무서','318'],['대전광역시 서구','서대전세무서','314'],['대전광역시 중구','대전세무서','305'],['대전광역시 동구','대전세무서','305'],['세종특별자치시','세종세무서','320'],
-    ['충청남도 공주시','공주세무서','307'],['충청남도 논산시','논산세무서','308'],['충청남도 계룡시','논산세무서','308'],['충청남도 부여군','논산세무서','308'],['충청남도 금산군','대전세무서','305'],['충청남도 보령시','보령세무서','313'],['충청남도 서천군','보령세무서','313'],['충청남도 서산시','서산세무서','316'],['충청남도 태안군','서산세무서','316'],['충청남도 아산시','아산세무서','319'],['충청남도 예산군','예산세무서','311'],['충청남도 당진시','예산세무서','311'],['충청남도 천안시','천안세무서','312'],['충청남도 홍성군','홍성세무서','310'],['충청남도 청양군','홍성세무서','310'],
-    ['충청북도 청주시 상당구','동청주세무서','317'],['충청북도 청주시 청원구','동청주세무서','317'],['충청북도 증평군','동청주세무서','317'],['충청북도 괴산군','동청주세무서','317'],['충청북도 청주시 흥덕구','청주세무서','301'],['충청북도 청주시 서원구','청주세무서','301'],['충청북도 영동군','영동세무서','302'],['충청북도 옥천군','영동세무서','302'],['충청북도 보은군','영동세무서','302'],['충청북도 제천시','제천세무서','304'],['충청북도 단양군','제천세무서','304'],['충청북도 충주시','충주세무서','303'],['충청북도 음성군','충주세무서','303'],['충청북도 진천군','충주세무서','303']
-  ]; for(const [r,n,c] of cc) if(has(r)) return TAX(n,c);
-
-  // 전북·전남광주
-  if(has('전북특별자치도 장수군')){
-    return has('천천면','장계면','계북면','계남면')?TAX('북전주세무서','418'):TAX('남원세무서','407');
-  }
-  if(has('전남광주통합특별시 영암군')) return has('삼호읍')?TAX('목포세무서','411'):TAX('나주세무서','412');
-  const jn=[
-    ['전북특별자치도 군산시','군산세무서','401'],['전북특별자치도 남원시','남원세무서','407'],['전북특별자치도 순창군','남원세무서','407'],['전북특별자치도 임실군','남원세무서','407'],['전북특별자치도 전주시 덕진구','북전주세무서','418'],['전북특별자치도 진안군','북전주세무서','418'],['전북특별자치도 무주군','북전주세무서','418'],['전북특별자치도 익산시','익산세무서','403'],['전북특별자치도 김제시','익산세무서','403'],['전북특별자치도 전주시 완산구','전주세무서','402'],['전북특별자치도 완주군','전주세무서','402'],['전북특별자치도 정읍시','정읍세무서','404'],['전북특별자치도 고창군','정읍세무서','404'],['전북특별자치도 부안군','정읍세무서','404'],
-    ['전남광주통합특별시 광산구','광산세무서','419'],['전남광주통합특별시 영광군','광산세무서','419'],['전남광주통합특별시 동구','광주세무서','408'],['전남광주통합특별시 남구','광주세무서','408'],['전남광주통합특별시 곡성군','광주세무서','408'],['전남광주통합특별시 화순군','광주세무서','408'],['전남광주통합특별시 나주시','나주세무서','412'],['전남광주통합특별시 함평군','나주세무서','412'],['전남광주통합특별시 목포시','목포세무서','411'],['전남광주통합특별시 무안군','목포세무서','411'],['전남광주통합특별시 신안군','목포세무서','411'],['전남광주통합특별시 북구','북광주세무서','409'],['전남광주통합특별시 장성군','북광주세무서','409'],['전남광주통합특별시 담양군','북광주세무서','409'],['전남광주통합특별시 서구','서광주세무서','410'],['전남광주통합특별시 순천시','순천세무서','416'],['전남광주통합특별시 광양시','순천세무서','416'],['전남광주통합특별시 구례군','순천세무서','416'],['전남광주통합특별시 보성군','순천세무서','416'],['전남광주통합특별시 고흥군','순천세무서','416'],['전남광주통합특별시 여수시','여수세무서','417'],['전남광주통합특별시 해남군','해남세무서','415'],['전남광주통합특별시 완도군','해남세무서','415'],['전남광주통합특별시 진도군','해남세무서','415'],['전남광주통합특별시 강진군','해남세무서','415'],['전남광주통합특별시 장흥군','해남세무서','415']
-  ]; for(const [r,n,c] of jn) if(has(r)) return TAX(n,c);
-
-  // 대구·경북
-  if(has('대구광역시 달서구')){
-    if(has('월성동','대천동','월암동','상인동','도원동','진천동','대곡동','유천동','송현동','본동')) return TAX('남대구세무서','514');
-    return TAX('서대구세무서','503');
-  }
-  const dg=[
-    ['대구광역시 남구','남대구세무서','514'],['대구광역시 달성군','남대구세무서','514'],['대구광역시 동구','동대구세무서','502'],['대구광역시 북구','북대구세무서','504'],['대구광역시 중구','북대구세무서','504'],['대구광역시 서구','서대구세무서','503'],['대구광역시 수성구','수성세무서','516'],['대구광역시 군위군','안동세무서','508'],
-    ['경상북도 경산시','경산세무서','515'],['경상북도 청도군','경산세무서','515'],['경상북도 경주시','경주세무서','505'],['경상북도 영천시','경주세무서','505'],['경상북도 구미시','구미세무서','513'],['경상북도 칠곡군','구미세무서','513'],['경상북도 김천시','김천세무서','510'],['경상북도 성주군','김천세무서','510'],['경상북도 상주시','상주세무서','511'],['경상북도 문경시','상주세무서','511'],['경상북도 안동시','안동세무서','508'],['경상북도 영양군','안동세무서','508'],['경상북도 청송군','안동세무서','508'],['경상북도 의성군','안동세무서','508'],['경상북도 영덕군','영덕세무서','507'],['경상북도 울진군','영덕세무서','507'],['경상북도 영주시','영주세무서','512'],['경상북도 봉화군','영주세무서','512'],['경상북도 예천군','영주세무서','512'],['경상북도 포항시','포항세무서','506'],['경상북도 울릉군','포항세무서','506'],['경상북도 고령군','서대구세무서','503']
-  ]; for(const [r,n,c] of dg) if(has(r)) return TAX(n,c);
-
-  // 부산·울산·경남·제주
-  if(has('울산광역시 울주군')){
-    return has('온산읍','온양읍','청량읍','웅촌면','서생면')?TAX('울산세무서','610'):TAX('동울산세무서','620');
-  }
-  const bg=[
-    ['부산광역시 금정구','금정세무서','621'],['부산광역시 기장군','금정세무서','621'],['부산광역시 동래구','동래세무서','607'],['부산광역시 연제구','동래세무서','607'],['부산광역시 강서구','부산강서세무서','625'],['부산광역시 부산진구','부산진세무서','605'],['부산광역시 동구','부산진세무서','605'],['부산광역시 북구','북부산세무서','606'],['부산광역시 사상구','북부산세무서','606'],['부산광역시 서구','서부산세무서','603'],['부산광역시 사하구','서부산세무서','603'],['부산광역시 남구','수영세무서','617'],['부산광역시 수영구','수영세무서','617'],['부산광역시 중구','중부산세무서','602'],['부산광역시 영도구','중부산세무서','602'],['부산광역시 해운대구','해운대세무서','623'],
-    ['울산광역시 중구','동울산세무서','620'],['울산광역시 동구','동울산세무서','620'],['울산광역시 북구','동울산세무서','620'],['울산광역시 남구','울산세무서','610'],
-    ['경상남도 거창군','거창세무서','611'],['경상남도 함양군','거창세무서','611'],['경상남도 합천군','거창세무서','611'],['경상남도 김해시','김해세무서','615'],['경상남도 밀양시','김해세무서','615'],['경상남도 창원시 마산합포구','마산세무서','608'],['경상남도 창원시 마산회원구','마산세무서','608'],['경상남도 함안군','마산세무서','608'],['경상남도 의령군','마산세무서','608'],['경상남도 창녕군','마산세무서','608'],['경상남도 양산시','양산세무서','624'],['경상남도 진주시','진주세무서','613'],['경상남도 사천시','진주세무서','613'],['경상남도 산청군','진주세무서','613'],['경상남도 하동군','진주세무서','613'],['경상남도 남해군','진주세무서','613'],['경상남도 창원시 성산구','창원세무서','609'],['경상남도 창원시 의창구','창원세무서','609'],['경상남도 창원시 진해구','창원세무서','609'],['경상남도 통영시','통영세무서','612'],['경상남도 거제시','통영세무서','612'],['경상남도 고성군','통영세무서','612'],['제주특별자치도','제주세무서','616']
-  ]; for(const [r,n,c] of bg) if(has(r)) return TAX(n,c);
   return null;
 }
-function applyTaxOfficeDetection(showToast=false){
-  const addr=$('schoolAddress').value.trim();
-  const result=detectTaxOffice(addr);
-  const box=$('taxOfficeStatus');
-  if(!addr){ box.className='tax-office-status idle'; box.textContent='주소를 입력하면 관할 세무서를 자동으로 확인합니다.'; refreshOrgSummary(); return; }
-  if(!result){
-    box.className='tax-office-status warn'; box.textContent='자동 판정하지 못했습니다. 시·군·구와 읍·면·동까지 포함한 주소인지 확인하고, 국세청 조회로 확인해주세요.';
-    refreshOrgSummary(); return;
-  }
-  $('taxOfficeName').value=result.name||'';
-  if(result.code) $('taxOffice').value=result.code;
-  if(result.ambiguous){
-    box.className='tax-office-status warn'; box.textContent='주소가 관할 분기지역에 해당해 세무서를 하나로 확정하지 못했습니다. 상세 주소를 입력하거나 국세청에서 확인해주세요.';
-  }else{
-    box.className='tax-office-status ok'; box.textContent='자동 판정: '+result.name+' · 세무서 코드 '+result.code+' (최종 제출 전 국세청 확인 권장)';
-    if(showToast) toast(result.name+' ('+result.code+')로 설정했습니다.','success');
-  }
+function populateTaxOffices(region, selectedCode=''){
+  const sel=$('taxOfficeSelect');
+  const list=TAX_OFFICES_BY_REGION[region]||[];
+  sel.innerHTML=list.length
+    ? '<option value="">관할 세무서 선택</option>'+list.map(([name,code,note])=>`<option value="${code}" data-name="${esc(name)}">${esc(name)} · ${code}${note?' · '+esc(note):''}</option>`).join('')
+    : '<option value="">광역단체를 먼저 선택하세요</option>';
+  sel.disabled=!list.length;
+  if(selectedCode && list.some(x=>x[1]===selectedCode)) sel.value=selectedCode;
+  syncTaxOfficeSelection();
+}
+function syncTaxOfficeSelection(){
+  const sel=$('taxOfficeSelect');
+  const opt=sel.options[sel.selectedIndex];
+  const code=sel.value||'';
+  const name=code && opt ? (opt.dataset.name||opt.textContent.split(' · ')[0]) : '';
+  $('taxOffice').value=code;
+  $('taxOfficeName').value=name;
   refreshOrgSummary();
 }
 function refreshOrgSummary(){
   const name=$('orgName')?.value.trim()||'';
-  const addr=$('schoolAddress')?.value.trim()||'';
   const office=$('taxOfficeName')?.value.trim()||'';
   const code=digits($('taxOffice')?.value||'').slice(0,3);
   $('orgSummaryText').textContent=name || '기관정보를 불러오거나 펼쳐서 입력하세요.';
-  $('taxSummaryText').textContent=office?('관할 세무서: '+office+(code?' ('+code+')':'')):(addr?'관할 세무서: 주소 확인 필요':'관할 세무서: 미확인');
+  $('taxSummaryText').textContent=office?('관할 세무서: '+office+(code?' ('+code+')':'')):'관할 세무서: 미확인';
 }
+$('taxRegion').addEventListener('change',()=>populateTaxOffices($('taxRegion').value,''));
+$('taxOfficeSelect').addEventListener('change',syncTaxOfficeSelection);
+['orgName'].forEach(id=>$(id).addEventListener('input',refreshOrgSummary));
+refreshOrgSummary();
 
 // ---------- Config ----------
 function cfg() {
   return {
     orgName:$('orgName').value.trim(), bizNo:cleanBizNo($('bizNo').value), ceoName:$('ceoName').value.trim(),
-    schoolAddress:$('schoolAddress').value.trim(), taxOfficeName:$('taxOfficeName').value.trim(),
+    taxRegion:$('taxRegion').value, taxOfficeName:$('taxOfficeName').value.trim(),
     taxOffice:digits($('taxOffice').value).slice(0,3), hometaxID:$('hometaxID').value.trim(),
     dept:$('dept').value.trim(), manager:$('manager').value.trim(), tel:$('tel').value.trim(),
     jobCode:digits($('jobCode').value).slice(0,6)||'940925'
@@ -603,7 +584,7 @@ function validateConfig(c) {
   return errs;
 }
 $('exportCfg').addEventListener('click',()=>{
-  const data={version:2,...cfg(),expenseRules:expenseRules(),source:'Ddalkkak Instructor Reporting'};
+  const data={schemaVersion:3,appVersion:APP_VERSION,...cfg(),expenseRules:expenseRules(),source:'Ddalkkak Instructor Reporting'};
   downloadBytes(new TextEncoder().encode(JSON.stringify(data,null,2)),'딸깍_기관기본정보.json','application/json');
 });
 $('importCfg').addEventListener('click',()=>$('cfgFile').click());
@@ -612,13 +593,35 @@ $('cfgFile').addEventListener('change',async e=>{
   try{
     const d=JSON.parse(await f.text());
     for(const [id,key] of [
-      ['orgName','orgName'],['bizNo','bizNo'],['ceoName','ceoName'],['schoolAddress','schoolAddress'],['taxOfficeName','taxOfficeName'],['taxOffice','taxOffice'],
-      ['hometaxID','hometaxID'],['dept','dept'],['manager','manager'],['tel','tel'],['jobCode','jobCode']
+      ['orgName','orgName'],['bizNo','bizNo'],['ceoName','ceoName'],['hometaxID','hometaxID'],
+      ['dept','dept'],['manager','manager'],['tel','tel'],['jobCode','jobCode']
     ]) if(d[key]!=null) $(id).value=d[key];
     if(Array.isArray(d.expenseRules)) $('expenseRules').value=d.expenseRules.map(x=>`${x.ym},${x.rate},${x.job||''}`).join('\n');
+
+    let region=String(d.taxRegion||'').trim();
+    let code=digits(d.taxOffice||'').slice(0,3);
+    if(!region && code){
+      const found=findTaxOfficeByCode(code);
+      if(found) region=found.region;
+    }
+    if(region && TAX_OFFICES_BY_REGION[region]){
+      $('taxRegion').value=region;
+      populateTaxOffices(region,code);
+    }else{
+      $('taxRegion').value='';
+      populateTaxOffices('', '');
+      if(code){
+        const found=findTaxOfficeByCode(code);
+        if(found){
+          $('taxRegion').value=found.region;
+          populateTaxOffices(found.region,code);
+        }
+      }
+    }
+    if(d.taxOfficeName && !$('taxOfficeName').value) $('taxOfficeName').value=d.taxOfficeName;
+
     $('cfgFileName').textContent=f.name;
     $('cfgState').classList.add('ok');
-    if($('schoolAddress').value.trim() && (!$('taxOffice').value.trim() || !$('taxOfficeName').value.trim())) applyTaxOfficeDetection(false);
     refreshOrgSummary();
     toast('기관 기본정보를 불러왔습니다.','success');
   }catch(err){showError('기관정보 파일 오류',err.message)}
@@ -629,12 +632,6 @@ $('toggleOrgDetails').addEventListener('click',()=>{
   d.classList.toggle('collapsed');
   $('toggleOrgDetails').textContent=willOpen?'기관정보 접기':'기관정보 펼치기';
 });
-$('findTaxOfficeBtn').addEventListener('click',()=>applyTaxOfficeDetection(true));
-$('openNtsTaxSearch').addEventListener('click',()=>window.open(NTS_TAX_SEARCH_URL,'_blank','noopener'));
-let taxTimer=null;
-$('schoolAddress').addEventListener('input',()=>{ clearTimeout(taxTimer); refreshOrgSummary(); if($('schoolAddress').value.trim().length>=6) taxTimer=setTimeout(()=>applyTaxOfficeDetection(false),550); });
-['orgName','taxOfficeName','taxOffice'].forEach(id=>$(id).addEventListener('input',refreshOrgSummary));
-refreshOrgSummary();
 
 // ---------- Output builders ----------
 function buildWithholding(c,ym) {
@@ -782,6 +779,45 @@ $('privacyToggle').addEventListener('click',()=>document.body.classList.toggle('
 
 refreshDetectedMonths(); renderStatus();
 
+
+function compareVersion(a,b){
+  const A=String(a).split('.').map(n=>parseInt(n,10)||0), B=String(b).split('.').map(n=>parseInt(n,10)||0);
+  for(let i=0;i<Math.max(A.length,B.length);i++){const x=A[i]||0,y=B[i]||0;if(x>y)return 1;if(x<y)return -1;}
+  return 0;
+}
+async function checkAppVersion(showToast=true){
+  const btn=$('versionCheck');
+  if(!btn) return;
+  if(location.protocol==='file:'){
+    btn.textContent='v'+APP_VERSION+' · 로컬 실행';
+    btn.className='version-check';
+    return;
+  }
+  btn.textContent='v'+APP_VERSION+' · 확인 중…';
+  btn.className='version-check';
+  try{
+    const r=await fetch('./version.json?ts='+Date.now(),{cache:'no-store'});
+    if(!r.ok) throw new Error('version.json 응답 오류');
+    const info=await r.json();
+    const latest=String(info.version||APP_VERSION);
+    if(compareVersion(latest,APP_VERSION)>0){
+      btn.textContent='v'+APP_VERSION+' · 새 버전 '+latest;
+      btn.className='version-check update';
+      if(showToast) toast('새 버전 v'+latest+'이 배포되어 있습니다. 페이지를 새로고침하세요.','info');
+    }else{
+      btn.textContent='v'+APP_VERSION+' · 최신';
+      btn.className='version-check ok';
+      if(showToast) toast('현재 최신 버전 v'+APP_VERSION+'입니다.','success');
+    }
+  }catch(e){
+    btn.textContent='v'+APP_VERSION+' · 확인 불가';
+    btn.className='version-check';
+    if(showToast) toast('버전 확인은 인터넷 연결 시 사용할 수 있습니다.','info');
+  }
+}
+window.addEventListener('load',()=>checkAppVersion(false));
+
+$('versionCheck')?.addEventListener('click',()=>checkAppVersion(true));
 </script>
 </body>
 </html>
