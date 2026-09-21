@@ -324,6 +324,72 @@ th{font-size:13px}
 .foot{font-size:12.3px}
 .password-modal p{font-size:13.5px}
 
+
+/* ===== Compact filing settings · v0.3.3 ===== */
+.filing-settings{padding:16px 18px}
+.filing-step{margin-bottom:11px}
+.filing-layout{
+  display:grid;
+  grid-template-columns:minmax(245px,.72fr) minmax(0,3.28fr);
+  gap:14px;
+  align-items:stretch;
+}
+.filing-month-panel{
+  border:1px solid #c8d8e9;
+  border-radius:12px;
+  background:#f5f9fe;
+  padding:11px 12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.filing-month-panel .month-field{min-width:0}
+.filing-month-panel .field input{background:#fff}
+.force-check{margin-top:8px;padding-bottom:0;font-size:12.8px}
+.filing-month-chips{margin-top:7px;min-height:0}
+.filing-month-chips .chip{padding:4px 7px;font-size:10.8px}
+.filing-options{
+  display:grid;
+  grid-template-columns:minmax(180px,.8fr) minmax(240px,1fr) minmax(390px,2fr);
+  gap:12px;
+  align-items:start;
+}
+.filing-options .field{min-width:0}
+.filing-options .field input,
+.filing-options .field select{min-height:42px}
+.filing-options .expense-field textarea{
+  min-height:58px;
+  height:58px;
+  resize:vertical;
+  padding-top:8px;
+  padding-bottom:8px;
+}
+.filing-options .expense-field .hint{
+  margin-top:4px;
+  font-size:11.3px;
+}
+@media(max-width:1100px){
+  .filing-layout{grid-template-columns:1fr}
+  .filing-month-panel{
+    display:grid;
+    grid-template-columns:minmax(180px,240px) auto 1fr;
+    gap:10px;
+    align-items:end;
+  }
+  .force-check{margin-top:0;padding-bottom:9px}
+  .filing-month-chips{margin-top:0;padding-bottom:6px}
+  .filing-options{grid-template-columns:1fr 1fr}
+  .filing-options .expense-field{grid-column:1/-1}
+}
+@media(max-width:780px){
+  .filing-settings{padding:15px}
+  .filing-month-panel{display:block}
+  .force-check{margin-top:8px;padding-bottom:0}
+  .filing-month-chips{margin-top:7px;padding-bottom:0}
+  .filing-options{grid-template-columns:1fr}
+  .filing-options .expense-field{grid-column:auto}
+}
+
 </style>
 </head>
 <body>
@@ -335,7 +401,7 @@ th{font-size:13px}
         <p class="eyebrow">DDALKKAK INSTRUCTOR REPORTING</p>
         <div class="title-line">
           <h1><span class="brand-pop">딸깍</span> <span class="brand-rest">방과후강사 신고자료</span></h1>
-          <button id="versionCheck" class="version-check title-version" type="button">v0.3.2 beta</button>
+          <button id="versionCheck" class="version-check title-version" type="button">v0.3.3 beta</button>
         </div>
         <p class="sub"><b>소득자료 엑셀 넣고, 딸깍.</b> 원천세 · 간이지급명세서 · 노무제공자 신고자료를 한 번에 생성합니다.</p>
       </div>
@@ -445,14 +511,20 @@ th{font-size:13px}
     </section>
 
     <section id="filingSettings" class="card settings filing-settings">
-      <div class="step"><span class="num-circle">04</span><div><h2>신고 설정</h2><div class="desc">기관 기본정보와 분리했습니다. 매월 귀속연월과 제출 형식만 확인하면 됩니다.</div></div></div>
-      <div class="formgrid">
-        <div class="field"><label>방과후강사 업종코드</label><input id="jobCode" value="940925" maxlength="6"></div>
-        <div class="field"><label>간이지급명세서 형식</label><select id="ganyiMode"><option value="txt">홈택스 변환파일 TXT (권장)</option><option value="xlsx">Excel XLSX</option></select></div>
-        <div class="field span2"><label>필요경비율 규칙</label><textarea id="expenseRules">200001,14.9,940925
-202607,19.3,940925</textarea><div class="hint">적용시작연월, 공제율(%), 업종코드 · VBA v4 기본값을 반영했습니다.</div></div>
+      <div class="step filing-step"><span class="num-circle">04</span><div><h2>신고 설정</h2><div class="desc">귀속연월을 선택하고 제출 형식만 확인하면 됩니다.</div></div></div>
+      <div class="filing-layout">
+        <div class="filing-month-panel">
+          <div class="field month-field"><label>귀속연월 *</label><input id="targetYM" type="month"></div>
+          <label class="check force-check"><input id="forceYM" type="checkbox"> 선택 연월로 모든 행 강제 적용</label>
+          <div id="monthChips" class="chips filing-month-chips"></div>
+        </div>
+        <div class="filing-options">
+          <div class="field"><label>방과후강사 업종코드</label><input id="jobCode" value="940925" maxlength="6"></div>
+          <div class="field"><label>간이지급명세서 형식</label><select id="ganyiMode"><option value="txt">홈택스 변환파일 TXT (권장)</option><option value="xlsx">Excel XLSX</option></select></div>
+          <div class="field expense-field"><label>필요경비율 규칙</label><textarea id="expenseRules">200001,14.9,940925
+202607,19.3,940925</textarea><div class="hint">적용시작연월, 공제율(%), 업종코드 · VBA v4 기본값</div></div>
+        </div>
       </div>
-      <div class="month-row"><div class="field month-field"><label>귀속연월 *</label><input id="targetYM" type="month"></div><label class="check"><input id="forceYM" type="checkbox"> 선택 연월로 모든 행 강제 적용</label><div id="monthChips" class="chips"></div></div>
     </section>
 
     <section class="card preview">
@@ -504,7 +576,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
 'use strict';
 
-const APP_VERSION='0.3.2';
+const APP_VERSION='0.3.3';
 const APP_DEVELOPER='나대현';
 const APP_ORGANIZATION='천안버들유치원';
 
