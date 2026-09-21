@@ -473,37 +473,51 @@ th{font-size:13px}
 }
 
 
-/* ===== Softer final action panel · v0.3.5 ===== */
+/* ===== Stateful final action panel · v0.3.6 ===== */
 .filing-action-panel{
-  border:1.5px solid #b8cae5;
-  background:linear-gradient(180deg,#f5f9ff 0%,#edf4fd 100%);
-  color:#17324f;
-  box-shadow:0 4px 12px rgba(36,71,111,.07);
+  border:1.5px solid #d5dee9;
+  background:#f6f8fb;
+  color:#6c7b8e;
+  box-shadow:none;
+  opacity:.72;
+  transition:background .18s ease,border-color .18s ease,box-shadow .18s ease,opacity .18s ease,transform .18s ease;
 }
-.filing-action-kicker{
-  color:#496d9f;
-}
-.filing-action-title{
-  color:#17324f;
-}
-.filing-action-desc{
-  color:#536b86;
-}
+.filing-action-kicker{color:#8a98aa}
+.filing-action-title{color:#5e6d80}
+.filing-action-desc{color:#8794a5}
 .filing-generate{
-  background:#2a66cf;
-  color:#fff;
-  border:1px solid #245dbd;
-  box-shadow:0 4px 10px rgba(37,99,235,.16);
-}
-.filing-generate:not(:disabled):hover{
-  background:#215abf;
-  box-shadow:0 6px 13px rgba(37,99,235,.2);
+  background:#dce4ee;
+  color:#8796aa;
+  border:1px solid #ced8e4;
+  box-shadow:none;
 }
 .filing-generate:disabled{
-  background:#d7e2f0;
-  color:#8192a9;
-  border-color:#c8d6e7;
+  background:#dce4ee;
+  color:#8796aa;
+  border-color:#ced8e4;
   box-shadow:none;
+  cursor:not-allowed;
+}
+.filing-action-panel.final-ready{
+  opacity:1;
+  border-color:#77c5a6;
+  background:linear-gradient(155deg,#edf9f3 0%,#e6f7ef 100%);
+  color:#0d674b;
+  box-shadow:0 5px 15px rgba(7,117,85,.11);
+}
+.filing-action-panel.final-ready .filing-action-kicker{color:#3a8a70}
+.filing-action-panel.final-ready .filing-action-title{color:#0b5f46}
+.filing-action-panel.final-ready .filing-action-desc{color:#467765}
+.filing-action-panel.final-ready .filing-generate{
+  background:#0b8a63;
+  color:#fff;
+  border-color:#087956;
+  box-shadow:0 5px 12px rgba(7,117,85,.2);
+}
+.filing-action-panel.final-ready .filing-generate:hover{
+  background:#087956;
+  transform:translateY(-1px);
+  box-shadow:0 7px 15px rgba(7,117,85,.24);
 }
 
 </style>
@@ -517,7 +531,7 @@ th{font-size:13px}
         <p class="eyebrow">DDALKKAK INSTRUCTOR REPORTING</p>
         <div class="title-line">
           <h1><span class="brand-pop">딸깍</span> <span class="brand-rest">방과후강사 신고자료</span></h1>
-          <button id="versionCheck" class="version-check title-version" type="button">v0.3.5 beta</button>
+          <button id="versionCheck" class="version-check title-version" type="button">v0.3.6 beta</button>
         </div>
         <p class="sub"><b>소득자료 엑셀 넣고, 딸깍.</b> 원천세 · 간이지급명세서 · 노무제공자 신고자료를 한 번에 생성합니다.</p>
       </div>
@@ -639,7 +653,7 @@ th{font-size:13px}
           <div class="field"><label>간이지급명세서 형식</label><select id="ganyiMode"><option value="txt">홈택스 변환파일 TXT (권장)</option><option value="xlsx">Excel XLSX</option></select></div>
           <div class="field expense-field"><label>필요경비율 규칙</label><textarea id="expenseRules">200001,14.9,940925
 202607,19.3,940925</textarea><div class="hint">적용시작연월, 공제율(%), 업종코드 · VBA v4 기본값</div></div>
-          <div class="filing-action-panel">
+          <div id="filingActionPanel" class="filing-action-panel">
             <div class="filing-action-copy">
               <div class="filing-action-kicker">FINAL</div>
               <div class="filing-action-title">3종 신고자료 생성</div>
@@ -698,7 +712,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
 'use strict';
 
-const APP_VERSION='0.3.5';
+const APP_VERSION='0.3.6';
 const APP_DEVELOPER='나대현';
 const APP_ORGANIZATION='천안버들유치원';
 
@@ -989,7 +1003,13 @@ function updateLaunchState(resetLaunch=false){
     launch.classList.toggle('launched',state.launched);
   }
   const ymReady=!!uiMonthToYM($('targetYM')?.value||'');
-  $('generateBtn').disabled=!(state.launched && allReady && ymReady);
+  const finalReady=state.launched && allReady && ymReady;
+  const actionPanel=$('filingActionPanel');
+  if(actionPanel){
+    actionPanel.classList.toggle('final-ready',finalReady);
+    actionPanel.classList.toggle('final-waiting',!finalReady);
+  }
+  $('generateBtn').disabled=!finalReady;
 }
 function renderStatus(resetLaunch=false) {
   $('incomeFileName').textContent = state.sourceFiles.length ? `${state.sourceFiles.length}개 파일 · ${state.incomes.length}건${state.incomeEncryptedCount?' · 🔒 암호화 '+state.incomeEncryptedCount+'개':''}` : '아직 선택하지 않음';
