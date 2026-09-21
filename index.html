@@ -520,6 +520,51 @@ th{font-size:13px}
   box-shadow:0 7px 15px rgba(7,117,85,.24);
 }
 
+
+/* ===== Preview table alignment · v0.3.7 ===== */
+.preview-table{table-layout:fixed;width:100%;min-width:900px}
+.preview-table .col-no{width:5%}
+.preview-table .col-name{width:18%}
+.preview-table .col-jumin{width:22%}
+.preview-table .col-ym{width:12%}
+.preview-table .col-pay{width:15%}
+.preview-table .col-tax{width:13%}
+.preview-table .col-match{width:15%}
+
+.preview-table th,
+.preview-table td{
+  vertical-align:middle;
+  height:42px;
+}
+.preview-table th{
+  text-align:center;
+  padding-left:12px;
+  padding-right:12px;
+}
+.preview-table td:nth-child(1),
+.preview-table td:nth-child(2),
+.preview-table td:nth-child(3),
+.preview-table td:nth-child(4),
+.preview-table td:nth-child(7){
+  text-align:center;
+}
+.preview-table th:nth-child(5),
+.preview-table th:nth-child(6),
+.preview-table td:nth-child(5),
+.preview-table td:nth-child(6){
+  text-align:right;
+  padding-right:24px;
+}
+.preview-table td:nth-child(3),
+.preview-table td:nth-child(4),
+.preview-table td:nth-child(5),
+.preview-table td:nth-child(6){
+  font-variant-numeric:tabular-nums;
+}
+.preview-table td:nth-child(2){font-weight:750}
+.preview-table td:nth-child(7) .good,
+.preview-table td:nth-child(7) .bad{display:inline-block;min-width:74px;text-align:center}
+
 </style>
 </head>
 <body>
@@ -531,7 +576,7 @@ th{font-size:13px}
         <p class="eyebrow">DDALKKAK INSTRUCTOR REPORTING</p>
         <div class="title-line">
           <h1><span class="brand-pop">딸깍</span> <span class="brand-rest">방과후강사 신고자료</span></h1>
-          <button id="versionCheck" class="version-check title-version" type="button">v0.3.6 beta</button>
+          <button id="versionCheck" class="version-check title-version" type="button">v0.3.7 beta</button>
         </div>
         <p class="sub"><b>소득자료 엑셀 넣고, 딸깍.</b> 원천세 · 간이지급명세서 · 노무제공자 신고자료를 한 번에 생성합니다.</p>
       </div>
@@ -667,7 +712,13 @@ th{font-size:13px}
 
     <section class="card preview">
       <div class="preview-head"><div><h2>자료 확인</h2><div class="desc">주민번호는 마스킹 상태만 표시합니다.</div></div></div>
-      <div class="tablewrap"><table><thead><tr><th>#</th><th>소득자명</th><th>마스킹 주민번호</th><th>귀속연월</th><th>지급액</th><th>소득세</th><th>명단 대조</th></tr></thead><tbody id="previewBody"></tbody></table></div>
+      <div class="tablewrap"><table class="preview-table">
+        <colgroup>
+          <col class="col-no"><col class="col-name"><col class="col-jumin"><col class="col-ym"><col class="col-pay"><col class="col-tax"><col class="col-match">
+        </colgroup>
+        <thead><tr><th>#</th><th>소득자명</th><th>마스킹 주민번호</th><th>귀속연월</th><th>지급액</th><th>소득세</th><th>명단 대조</th></tr></thead>
+        <tbody id="previewBody"></tbody>
+      </table></div>
     </section>
 
     <section id="errorBox" class="error hidden"><div class="error-icon">!</div><div><h3 id="errorTitle">오류</h3><pre id="errorDetail"></pre></div><button id="closeError" class="x">×</button></section>
@@ -712,7 +763,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
 'use strict';
 
-const APP_VERSION='0.3.6';
+const APP_VERSION='0.3.7';
 const APP_DEVELOPER='나대현';
 const APP_ORGANIZATION='천안버들유치원';
 
