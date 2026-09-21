@@ -565,6 +565,54 @@ th{font-size:13px}
 .preview-table td:nth-child(7) .good,
 .preview-table td:nth-child(7) .bad{display:inline-block;min-width:74px;text-align:center}
 
+
+/* ===== Desktop comfort scale · v0.3.8 =====
+   100% browser zoom should feel close to the previous 110% view,
+   without enlarging card spacing enough to increase scrolling. */
+@media(min-width:1200px){
+  .wrap{padding-top:14px}
+
+  .hero-ddk h1{font-size:36px}
+  .eyebrow{font-size:12.5px}
+  .sub{font-size:15px}
+  .version-check.title-version{font-size:12.5px}
+  .privacy-pill{font-size:13px}
+
+  .setup-heading h2{font-size:19px}
+  .setup-heading .desc{font-size:14px}
+  .setup-title-text b{font-size:16px}
+  .setup-title-text span{font-size:12.3px}
+  .setup-status{font-size:11.7px}
+  .compact-drop .file-info b{font-size:14.2px}
+  .compact-drop .file-info span{font-size:12.3px}
+  .setup-sub{font-size:12.3px}
+  .setup-actions .smallbtn{font-size:12.3px}
+  .setup-launch .launch-kicker{font-size:10.6px}
+  .setup-launch .launch-title{font-size:16px}
+  .compact-ready .ready-chip{font-size:11px}
+  .setup-launch .launch-btn{font-size:14px}
+
+  .card h2{font-size:20px}
+  .card .desc{font-size:14.5px}
+  .field label{font-size:14.5px}
+  .field input,.field select,.field textarea{
+    font-size:15.5px;
+  }
+  .field input,.field select{min-height:44px}
+  .hint{font-size:12.6px}
+  .check{font-size:14px}
+  .smallbtn{font-size:13.5px}
+  .filing-action-title{font-size:15.2px}
+  .filing-action-desc{font-size:11.3px}
+  .filing-generate{font-size:13.8px}
+
+  .preview-head .desc{font-size:14px}
+  .preview-table{font-size:14px}
+  .preview-table th{font-size:13.5px}
+  .preview-table th,.preview-table td{height:44px}
+  .foot{font-size:12.6px}
+}
+
 </style>
 </head>
 <body>
@@ -576,7 +624,7 @@ th{font-size:13px}
         <p class="eyebrow">DDALKKAK INSTRUCTOR REPORTING</p>
         <div class="title-line">
           <h1><span class="brand-pop">딸깍</span> <span class="brand-rest">방과후강사 신고자료</span></h1>
-          <button id="versionCheck" class="version-check title-version" type="button">v0.3.7 beta</button>
+          <button id="versionCheck" class="version-check title-version" type="button">v0.3.8 beta</button>
         </div>
         <p class="sub"><b>소득자료 엑셀 넣고, 딸깍.</b> 원천세 · 간이지급명세서 · 노무제공자 신고자료를 한 번에 생성합니다.</p>
       </div>
@@ -763,7 +811,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
 'use strict';
 
-const APP_VERSION='0.3.7';
+const APP_VERSION='0.3.8';
 const APP_DEVELOPER='나대현';
 const APP_ORGANIZATION='천안버들유치원';
 
