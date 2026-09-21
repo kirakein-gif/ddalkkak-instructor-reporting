@@ -1009,6 +1009,8 @@ $('cfgFile').addEventListener('change',async e=>{
     $('cfgFileName').textContent=f.name;
     $('cfgState').classList.add('ok');
     refreshOrgSummary();
+    state.launched=false;
+    updateLaunchState();
     toast('기관 기본정보를 불러왔습니다.','success');
   }catch(err){showError('기관정보 파일 오류',err.message)}
   e.target.value='';
@@ -1173,10 +1175,10 @@ $('doSaveVault').addEventListener('click',async()=>{
 $('cancelSaveVault').addEventListener('click',()=>{$('saveVaultModal').classList.add('hidden');$('vaultModalMsg').textContent='';});
 $('unlockVault').addEventListener('click',async()=>{
   const f=state.pendingVaultFile,pw=$('unlockPw').value; if(!f||!pw)return;
-  try{state.roster=await decryptRosterVault(f,pw);state.rosterFile=f.name;state.pendingVaultFile=null;$('unlockModal').classList.add('hidden');$('unlockMsg').textContent='';renderStatus();toast(`강사 ${state.roster.length}명을 불러왔습니다.`,'success');}
+  try{state.roster=await decryptRosterVault(f,pw);state.rosterFile=f.name;state.rosterEncrypted=true;state.pendingVaultFile=null;$('unlockPw').value='';$('unlockModal').classList.add('hidden');$('unlockMsg').textContent='';renderStatus(true);toast(`강사 ${state.roster.length}명을 불러왔습니다.`,'success');}
   catch(e){$('unlockMsg').textContent=e.message;}
 });
-$('cancelUnlock').addEventListener('click',()=>{state.pendingVaultFile=null;$('unlockModal').classList.add('hidden');$('unlockMsg').textContent='';});
+$('cancelUnlock').addEventListener('click',()=>{state.pendingVaultFile=null;$('unlockPw').value='';$('unlockModal').classList.add('hidden');$('unlockMsg').textContent='';});
 
 $('downloadRosterTemplate').addEventListener('click',async()=>{const rows=[['불러온 이름','주민등록번호','실제이름'],['홍길동(방과후)','8001011234567','홍길동']];const bytes=await makeXlsx(rows,'강사명단',1);downloadBytes(bytes,'강사명단_양식.xlsx','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');});
 
