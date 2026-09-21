@@ -624,7 +624,7 @@ th{font-size:13px}
         <p class="eyebrow">DDALKKAK INSTRUCTOR REPORTING</p>
         <div class="title-line">
           <h1><span class="brand-pop">딸깍</span> <span class="brand-rest">방과후강사 신고자료</span></h1>
-          <button id="versionCheck" class="version-check title-version" type="button">v0.3.8 beta</button>
+          <button id="versionCheck" class="version-check title-version" type="button">WEB v2.0</button>
         </div>
         <p class="sub"><b>소득자료 엑셀 넣고, 딸깍.</b> 원천세 · 간이지급명세서 · 노무제공자 신고자료를 한 번에 생성합니다.</p>
       </div>
@@ -811,7 +811,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
 'use strict';
 
-const APP_VERSION='0.3.8';
+const APP_VERSION='2.0';
 const APP_DEVELOPER='나대현';
 const APP_ORGANIZATION='천안버들유치원';
 
@@ -1641,9 +1641,9 @@ function compareVersion(a,b){
 async function checkAppVersion(showToast=true){
   const btn=$('versionCheck');
   if(!btn) return;
-  const normal='v'+APP_VERSION+' beta';
+  const normal='WEB v'+APP_VERSION;
   if(location.protocol==='file:'){btn.textContent=normal;return;}
-  btn.textContent='v'+APP_VERSION+' · 확인 중';
+  btn.textContent='WEB v'+APP_VERSION+' · 확인 중';
   btn.className='version-check title-version';
   try{
     const r=await fetch('./version.json?ts='+Date.now(),{cache:'no-store'});
@@ -1651,14 +1651,14 @@ async function checkAppVersion(showToast=true){
     const info=await r.json();
     const latest=String(info.version||APP_VERSION);
     if(compareVersion(latest,APP_VERSION)>0){
-      btn.textContent='v'+APP_VERSION+' · 새 버전 '+latest;
+      btn.textContent='WEB v'+APP_VERSION+' · 새 버전 '+latest;
       btn.className='version-check title-version update';
       if(showToast) toast('새 버전 v'+latest+'이 배포되어 있습니다. 페이지를 새로고침하세요.','info');
     }else{
       btn.textContent=normal;
       btn.className='version-check title-version ok';
       btn.title='현재 최신 버전입니다.';
-      if(showToast) toast('현재 최신 버전 v'+APP_VERSION+'입니다.','success');
+      if(showToast) toast('현재 최신 웹 버전 v'+APP_VERSION+'입니다.','success');
     }
   }catch(e){
     btn.textContent=normal;
