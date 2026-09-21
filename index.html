@@ -390,6 +390,88 @@ th{font-size:13px}
   .filing-options .expense-field{grid-column:auto}
 }
 
+
+/* ===== Integrated final action · v0.3.4 ===== */
+.filing-layout{
+  grid-template-columns:minmax(230px,.66fr) minmax(0,3.34fr);
+  gap:12px;
+}
+.filing-month-panel{padding:10px 11px}
+.filing-options{
+  grid-template-columns:minmax(165px,.72fr) minmax(235px,1fr) minmax(330px,1.55fr) minmax(230px,.95fr);
+  gap:10px;
+  align-items:stretch;
+}
+.filing-options>.field{align-self:start}
+.filing-options .expense-field textarea{
+  min-height:56px;
+  height:56px;
+}
+.filing-action-panel{
+  min-width:0;
+  border:1px solid #1c57b8;
+  border-radius:11px;
+  background:linear-gradient(145deg,#174fae 0%,#2869dd 100%);
+  color:#fff;
+  padding:10px 11px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:8px;
+  box-shadow:0 5px 14px rgba(31,91,190,.16);
+}
+.filing-action-kicker{
+  font-size:9.8px;font-weight:900;letter-spacing:.12em;color:#cfe0ff;margin-bottom:1px
+}
+.filing-action-title{
+  font-size:14.5px;font-weight:900;line-height:1.25;color:#fff
+}
+.filing-action-desc{
+  margin-top:3px;font-size:10.8px;font-weight:650;line-height:1.35;color:#dfebff
+}
+.filing-generate{
+  width:100%;min-width:0;min-height:39px;
+  border:0;border-radius:9px;padding:8px 10px;
+  background:#fff;color:#174b9e;font-size:13px;font-weight:900;
+  box-shadow:0 4px 10px rgba(0,0,0,.13);
+  cursor:pointer;
+}
+.filing-generate:not(:disabled):hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 13px rgba(0,0,0,.16)
+}
+.filing-generate:disabled{
+  background:rgba(255,255,255,.35);
+  color:rgba(227,238,255,.72);
+  box-shadow:none;
+  cursor:not-allowed;
+}
+@media(max-width:1280px){
+  .filing-layout{grid-template-columns:1fr}
+  .filing-month-panel{
+    display:grid;
+    grid-template-columns:minmax(180px,230px) auto 1fr;
+    gap:10px;align-items:end
+  }
+  .filing-options{
+    grid-template-columns:minmax(160px,.7fr) minmax(220px,1fr) minmax(320px,1.5fr) minmax(220px,.9fr)
+  }
+}
+@media(max-width:1000px){
+  .filing-options{grid-template-columns:1fr 1fr}
+  .filing-options .expense-field{grid-column:1/-1}
+  .filing-action-panel{grid-column:1/-1;flex-direction:row;align-items:center}
+  .filing-action-copy{min-width:0}
+  .filing-generate{width:auto;min-width:230px}
+}
+@media(max-width:780px){
+  .filing-month-panel{display:block}
+  .filing-options{grid-template-columns:1fr}
+  .filing-options .expense-field,.filing-action-panel{grid-column:auto}
+  .filing-action-panel{flex-direction:column;align-items:stretch}
+  .filing-generate{width:100%;min-width:0}
+}
+
 </style>
 </head>
 <body>
@@ -401,7 +483,7 @@ th{font-size:13px}
         <p class="eyebrow">DDALKKAK INSTRUCTOR REPORTING</p>
         <div class="title-line">
           <h1><span class="brand-pop">딸깍</span> <span class="brand-rest">방과후강사 신고자료</span></h1>
-          <button id="versionCheck" class="version-check title-version" type="button">v0.3.3 beta</button>
+          <button id="versionCheck" class="version-check title-version" type="button">v0.3.4 beta</button>
         </div>
         <p class="sub"><b>소득자료 엑셀 넣고, 딸깍.</b> 원천세 · 간이지급명세서 · 노무제공자 신고자료를 한 번에 생성합니다.</p>
       </div>
@@ -523,6 +605,14 @@ th{font-size:13px}
           <div class="field"><label>간이지급명세서 형식</label><select id="ganyiMode"><option value="txt">홈택스 변환파일 TXT (권장)</option><option value="xlsx">Excel XLSX</option></select></div>
           <div class="field expense-field"><label>필요경비율 규칙</label><textarea id="expenseRules">200001,14.9,940925
 202607,19.3,940925</textarea><div class="hint">적용시작연월, 공제율(%), 업종코드 · VBA v4 기본값</div></div>
+          <div class="filing-action-panel">
+            <div class="filing-action-copy">
+              <div class="filing-action-kicker">FINAL</div>
+              <div class="filing-action-title">3종 신고자료 생성</div>
+              <div class="filing-action-desc">원천세 · 간이지급명세서 · 노무제공자</div>
+            </div>
+            <button id="generateBtn" class="generate filing-generate" disabled>신고자료 딸깍 생성</button>
+          </div>
         </div>
       </div>
     </section>
@@ -533,8 +623,6 @@ th{font-size:13px}
     </section>
 
     <section id="errorBox" class="error hidden"><div class="error-icon">!</div><div><h3 id="errorTitle">오류</h3><pre id="errorDetail"></pre></div><button id="closeError" class="x">×</button></section>
-
-    <section class="card action-card"><div><h2>준비가 끝났으면 딸깍</h2><p>원천세 전자신고파일 + 간이지급명세서 + 노무제공자 월보수액 신고 Excel을 생성합니다.</p></div><button id="generateBtn" class="generate" disabled>3종 신고자료 딸깍 생성</button></section>
 
     <section id="outputBox" class="card outputs hidden"><div class="output-top"><div><h2>생성 완료</h2><div id="outputSummary" class="output-summary"></div></div><button id="zipAll" class="zipbtn">3종 ZIP 한 번에 받기</button></div><div id="outputList" class="output-list"></div></section>
   </main>
@@ -576,7 +664,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
 'use strict';
 
-const APP_VERSION='0.3.3';
+const APP_VERSION='0.3.4';
 const APP_DEVELOPER='나대현';
 const APP_ORGANIZATION='천안버들유치원';
 
@@ -1344,7 +1432,7 @@ $('generateBtn').addEventListener('click',async()=>{
   try {
     state.outputs=await buildAllOutputs(c,ym); renderOutputs(c,ym); toast('3종 신고자료가 생성되었습니다.','success');
   } catch(err){showError('자료 생성 중 오류가 발생했습니다',err.message||String(err));}
-  finally{$('generateBtn').disabled=false;$('generateBtn').textContent='3종 신고자료 딸깍 생성';}
+  finally{$('generateBtn').disabled=false;$('generateBtn').textContent='신고자료 딸깍 생성';updateLaunchState();}
 });
 
 function renderOutputs(c,ym) {
