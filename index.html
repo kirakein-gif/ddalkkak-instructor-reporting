@@ -225,6 +225,65 @@ td{padding:10px 12px;border-top:1px solid #dfe7f0;color:#213750;font-weight:600}
   .output-list{grid-template-columns:1fr}.foot{align-items:flex-start;gap:8px;flex-direction:column}
 }
 
+
+/* ===== Compact preparation board · v0.3.1 ===== */
+.setup-card{grid-column:1/-1;padding:16px 18px}
+.setup-heading{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:10px}
+.setup-heading h2{font-size:17px;margin:0 0 2px}
+.setup-heading .desc{font-size:12.5px}
+.setup-grid{display:grid;grid-template-columns:1.05fr 1.05fr 1.12fr .66fr;gap:10px;align-items:stretch}
+.setup-tile,.setup-launch{
+  border:1.5px solid #e0bfb2;border-radius:13px;padding:11px 12px;background:#fff8f4;
+  transition:background .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+.setup-tile.ready,.setup-launch.ready{
+  background:#f0fbf6;border-color:#9fd8c2;box-shadow:0 4px 12px rgba(7,117,85,.06)
+}
+.setup-title-row{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:8px;align-items:center;margin-bottom:8px}
+.setup-title-row .num-circle{width:30px;height:30px;flex-basis:30px;font-size:11.5px}
+.setup-title-text{min-width:0}
+.setup-title-text b{display:block;color:#132d49;font-size:14px;font-weight:900;line-height:1.2}
+.setup-title-text span{display:block;color:#5b6f85;font-size:10.8px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.setup-status{
+  border:1px solid #efc9b8;background:#fff0e8;color:#a24b24;border-radius:999px;
+  padding:4px 7px;font-size:10.5px;font-weight:900;white-space:nowrap
+}
+.setup-tile.ready .setup-status{border-color:#a6d9c4;background:#e5f8ef;color:#077553}
+.compact-drop{min-height:58px;padding:8px 10px;border-width:1.5px;border-radius:10px;background:rgba(255,255,255,.72)}
+.compact-drop .file-mark{width:34px;height:34px;flex-basis:34px;border-radius:9px;font-size:12px}
+.compact-drop .file-info b{font-size:12.5px;margin-bottom:1px}
+.compact-drop .file-info span{font-size:10.8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px;display:block}
+.compact-drop .state-dot{width:8px;height:8px;box-shadow:0 0 0 4px rgba(194,207,221,.18)}
+.compact-drop .state-dot.ok{box-shadow:0 0 0 4px rgba(10,155,107,.12)}
+.setup-sub{
+  min-height:18px;margin-top:5px;color:#52677e;font-size:10.8px;font-weight:700;
+  line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.setup-actions{margin-top:5px;gap:5px}
+.setup-actions .smallbtn{min-height:30px;padding:5px 8px;font-size:10.8px;border-radius:8px}
+.setup-launch{
+  display:flex;flex-direction:column;justify-content:center;align-items:stretch;text-align:center;
+  background:#fff8f4;border-color:#e0bfb2
+}
+.setup-launch.ready{background:linear-gradient(155deg,#edf8ff,#eefaf5);border-color:#93cbb7}
+.setup-launch .launch-kicker{font-size:9.5px;margin-bottom:1px}
+.setup-launch .launch-title{font-size:14px;margin-bottom:6px}
+.compact-ready{justify-content:center;margin-bottom:8px;gap:4px}
+.compact-ready .ready-chip{font-size:9.8px;padding:3px 5px}
+.setup-launch .launch-btn{width:100%;min-width:0;min-height:38px;padding:8px 9px;font-size:12.5px;border-radius:9px}
+.org-detail-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.org-detail-head b{font-size:13.5px;color:#17324f}.org-detail-head span{font-size:11.5px;color:#5a7088}
+.org-details{margin-top:12px;padding-top:12px}
+.org-details.collapsed{margin-top:0;padding-top:0}
+@media(max-width:1250px){
+  .setup-grid{grid-template-columns:1fr 1fr}
+  .setup-launch{min-height:116px}
+}
+@media(max-width:780px){
+  .setup-card{padding:14px}.setup-heading .desc{display:none}.setup-grid{grid-template-columns:1fr}
+  .setup-title-text span,.setup-sub{white-space:normal}.compact-drop .file-info span{max-width:none}
+}
+
 </style>
 </head>
 <body>
@@ -236,7 +295,7 @@ td{padding:10px 12px;border-top:1px solid #dfe7f0;color:#213750;font-weight:600}
         <p class="eyebrow">DDALKKAK INSTRUCTOR REPORTING</p>
         <div class="title-line">
           <h1><span class="brand-pop">딸깍</span> <span class="brand-rest">방과후강사 신고자료</span></h1>
-          <button id="versionCheck" class="version-check title-version" type="button">v0.3.0 beta</button>
+          <button id="versionCheck" class="version-check title-version" type="button">v0.3.1 beta</button>
         </div>
         <p class="sub"><b>소득자료 엑셀 넣고, 딸깍.</b> 원천세 · 간이지급명세서 · 노무제공자 신고자료를 한 번에 생성합니다.</p>
       </div>
@@ -248,32 +307,81 @@ td{padding:10px 12px;border-top:1px solid #dfe7f0;color:#213750;font-weight:600}
   <div class="privacy-panel"><b>개인정보 보호 모드</b><br>선택한 소득자료·강사명단·주민등록번호는 이 브라우저 메모리에서만 처리하며 외부로 전송하지 않습니다. 암호화된 Excel의 비밀번호도 서버·브라우저 저장소에 저장하지 않고, 파일을 읽는 동안 메모리에서만 사용합니다. <b>원본 Excel의 암호는 해제하거나 변경하지 않으며 암호가 풀린 파일을 저장하지 않습니다.</b> 외부 API·외부 CDN을 사용하지 않습니다.</div>
 
   <main class="grid">
-    <section class="card org-card">
-      <div class="step org-step"><span class="num-circle">01</span><div><h2>기관 기본정보</h2><div class="desc">매월 반복 입력하지 않도록 기관정보 파일을 먼저 불러옵니다. 광역단체를 고른 뒤 관할 세무서를 선택하면 코드가 자동 입력됩니다.</div></div></div>
-      <div class="org-top-grid">
-        <div class="drop org-file-drop">
-          <input id="cfgFile" type="file" accept=".json,.ddkorg">
-          <div class="drop-main"><span class="file-mark">🏫</span><div class="file-info"><b>기관 기본정보 파일 등록</b><span id="cfgFileName">아직 선택하지 않음 · 기존 딸깍 기관설정 JSON 사용 가능</span></div><span id="cfgState" class="state-dot"></span></div>
-        </div>
-        <div class="org-summary-box">
-          <div class="org-summary-title">현재 기관</div>
-          <div id="orgSummaryText" class="org-summary-main">기관정보를 불러오거나 펼쳐서 입력하세요.</div>
-          <div id="taxSummaryText" class="org-summary-sub">관할 세무서: 미확인</div>
-        </div>
+    <section class="card setup-card">
+      <div class="setup-heading">
+        <div><h2>신고자료 준비</h2><div class="desc">기관정보 · 소득자료 · 강사명단을 한 줄에서 준비합니다. 준비되지 않은 항목은 색으로 표시됩니다.</div></div>
       </div>
-      <div class="inline-actions org-actions">
-        <button id="importCfg" class="smallbtn">기관정보 파일 선택</button>
-        <button id="exportCfg" class="smallbtn">기관정보 파일 저장</button>
-        <button id="toggleOrgDetails" class="smallbtn">기관정보 펼치기</button>
+
+      <div class="setup-grid">
+        <div id="setupOrg" class="setup-tile pending">
+          <div class="setup-title-row">
+            <span class="num-circle">01</span>
+            <div class="setup-title-text"><b>기관 기본정보</b><span id="orgSummaryText">기관정보를 불러오세요.</span></div>
+            <span id="setupOrgStatus" class="setup-status">준비 필요</span>
+          </div>
+          <div class="drop compact-drop org-file-drop">
+            <input id="cfgFile" type="file" accept=".json,.ddkorg">
+            <div class="drop-main"><span class="file-mark">🏫</span><div class="file-info"><b>기관정보 파일</b><span id="cfgFileName">아직 선택하지 않음</span></div><span id="cfgState" class="state-dot"></span></div>
+          </div>
+          <div id="taxSummaryText" class="setup-sub">관할 세무서: 미확인</div>
+          <div class="inline-actions setup-actions">
+            <button id="importCfg" class="smallbtn">파일 선택</button>
+            <button id="exportCfg" class="smallbtn">저장</button>
+            <button id="toggleOrgDetails" class="smallbtn">직접 입력</button>
+          </div>
+        </div>
+
+        <div id="setupIncome" class="setup-tile pending">
+          <div class="setup-title-row">
+            <span class="num-circle">02</span>
+            <div class="setup-title-text"><b>소득자료</b><span>암호화 Excel 지원</span></div>
+            <span id="setupIncomeStatus" class="setup-status">준비 필요</span>
+          </div>
+          <div class="drop compact-drop">
+            <input id="incomeFiles" type="file" accept=".xlsx,.xlsm" multiple>
+            <div class="drop-main"><span class="file-mark">₩</span><div class="file-info"><b>소득자료 Excel</b><span id="incomeFileName">아직 선택하지 않음</span></div><span id="incomeState" class="state-dot"></span></div>
+          </div>
+          <div class="setup-sub">🔐 비밀번호는 메모리에서만 사용 · 원본 암호 유지</div>
+          <div class="inline-actions setup-actions"><button id="clearIncome" class="smallbtn">소득자료 비우기</button></div>
+        </div>
+
+        <div id="setupRoster" class="setup-tile pending">
+          <div class="setup-title-row">
+            <span class="num-circle">03</span>
+            <div class="setup-title-text"><b>강사명단</b><span>주민번호는 화면에 표시하지 않음</span></div>
+            <span id="setupRosterStatus" class="setup-status">준비 필요</span>
+          </div>
+          <div class="drop compact-drop">
+            <input id="rosterFile" type="file" accept=".xlsx,.xlsm,.ddkstaff">
+            <div class="drop-main"><span class="file-mark">ID</span><div class="file-info"><b>강사명단 파일</b><span id="rosterFileName">아직 선택하지 않음</span></div><span id="rosterState" class="state-dot"></span></div>
+          </div>
+          <div id="matchSummary" class="setup-sub"><span class="muted">소득자료와 자동 대조합니다.</span></div>
+          <div class="inline-actions setup-actions">
+            <button id="downloadRosterTemplate" class="smallbtn">양식</button>
+            <button id="saveVault" class="smallbtn">🔐 암호화 저장</button>
+            <button id="clearRoster" class="smallbtn">비우기</button>
+          </div>
+        </div>
+
+        <div id="setupLaunch" class="setup-launch pending">
+          <div class="launch-kicker">READY CHECK</div>
+          <div class="launch-title">신고 준비</div>
+          <div class="ready-chips compact-ready">
+            <span id="readyOrg" class="ready-chip">기관</span>
+            <span id="readyIncome" class="ready-chip">소득</span>
+            <span id="readyRoster" class="ready-chip">명단</span>
+          </div>
+          <button id="launchBtn" class="launch-btn" type="button" disabled>준비 후 시작</button>
+        </div>
       </div>
 
       <div id="orgDetails" class="org-details collapsed">
+        <div class="org-detail-head"><b>기관 기본정보 직접 입력</b><span>필요할 때만 펼쳐서 수정합니다.</span></div>
         <div class="formgrid">
           <div class="field"><label>기관명 *</label><input id="orgName" placeholder="예) ○○유치원"></div>
           <div class="field"><label>사업자등록번호 *</label><input id="bizNo" inputmode="numeric" placeholder="123-45-67890"></div>
           <div class="field"><label>대표자명 *</label><input id="ceoName" placeholder="대표자 성명"></div>
           <div class="field"><label>홈택스 ID *</label><input id="hometaxID" autocomplete="off" placeholder="전자신고용 ID"></div>
-
           <div class="field"><label>광역단체 *</label>
             <select id="taxRegion">
               <option value="">시·도 선택</option>
@@ -285,44 +393,15 @@ td{padding:10px 12px;border-top:1px solid #dfe7f0;color:#213750;font-weight:600}
           </div>
           <div class="field span2"><label>관할 세무서 *</label>
             <select id="taxOfficeSelect" disabled><option value="">광역단체를 먼저 선택하세요</option></select>
-            <div class="hint">국세청 전국 세무관서 기준 목록입니다. 광역단체는 목록을 좁히기 위한 1차 선택이며 최종 관할 세무서를 확인해 선택하세요.</div>
+            <div class="hint">광역단체는 목록을 좁히기 위한 1차 선택입니다.</div>
           </div>
           <div class="field"><label>세무서 코드</label><input id="taxOffice" inputmode="numeric" maxlength="3" placeholder="자동 입력" readonly></div>
           <input id="taxOfficeName" type="hidden">
-
           <div class="field"><label>담당자 부서</label><input id="dept" placeholder="예) 행정실"></div>
           <div class="field"><label>담당자 성명</label><input id="manager" placeholder="예) 홍길동"></div>
           <div class="field"><label>담당자 전화번호</label><input id="tel" placeholder="041-000-0000"></div>
         </div>
       </div>
-    </section>
-
-    <section class="card">
-      <div class="step"><span class="num-circle">02</span><div><h2>소득자료 불러오기</h2><div class="desc">기존 VBA와 동일하게 첫 시트의 4행부터 A:R 데이터를 읽습니다.</div></div></div>
-      <div class="drop"><input id="incomeFiles" type="file" accept=".xlsx,.xlsm" multiple><div class="drop-main"><span class="file-mark">₩</span><div class="file-info"><b>소득자료 Excel 선택</b><span id="incomeFileName">아직 선택하지 않음</span></div><span id="incomeState" class="state-dot"></span></div></div>
-      <div class="inline-actions"><button id="clearIncome" class="smallbtn">소득자료 비우기</button></div>
-      <div class="secure-hint">🔐 암호화 Excel 지원 · 비밀번호는 읽는 순간에만 사용하며 원본 암호는 그대로 유지합니다.</div>
-    </section>
-
-    <section class="card">
-      <div class="step"><span class="num-circle">03</span><div><h2>강사명단 연결</h2><div class="desc">이름 + 주민번호 앞 6자리로 대조합니다. 전체 주민번호는 화면에 표시하지 않습니다.</div></div></div>
-      <div class="drop"><input id="rosterFile" type="file" accept=".xlsx,.xlsm,.ddkstaff"><div class="drop-main"><span class="file-mark">ID</span><div class="file-info"><b>강사명단 선택</b><span id="rosterFileName">아직 선택하지 않음</span></div><span id="rosterState" class="state-dot"></span></div></div>
-      <div class="inline-actions"><button id="downloadRosterTemplate" class="smallbtn">강사명단 양식</button><button id="saveVault" class="smallbtn">🔐 암호화 명단 저장</button><button id="clearRoster" class="smallbtn">명단 메모리 비우기</button></div>
-      <div class="secure-hint">🔐 암호화 Excel은 비밀번호 입력 후 브라우저 메모리에서만 읽습니다.</div>
-      <div id="matchSummary" class="match"><span class="muted">두 파일을 불러오면 자동 대조합니다.</span></div>
-    </section>
-
-    <section id="launchCard" class="launch-card">
-      <div class="launch-copy">
-        <div class="launch-kicker">READY CHECK</div>
-        <div class="launch-title">3가지 자료가 준비되면 신고 작업을 시작합니다.</div>
-        <div class="ready-chips">
-          <span id="readyOrg" class="ready-chip">기관정보</span>
-          <span id="readyIncome" class="ready-chip">소득자료</span>
-          <span id="readyRoster" class="ready-chip">강사명단</span>
-        </div>
-      </div>
-      <button id="launchBtn" class="launch-btn" type="button" disabled>신고 준비 시작</button>
     </section>
 
     <section id="filingSettings" class="card settings filing-settings">
@@ -385,7 +464,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
 'use strict';
 
-const APP_VERSION='0.3.0';
+const APP_VERSION='0.3.1';
 const APP_DEVELOPER='나대현';
 const APP_ORGANIZATION='천안버들유치원';
 
@@ -657,10 +736,22 @@ function updateLaunchState(resetLaunch=false){
   for(const [id,ok] of [['readyOrg',orgReady],['readyIncome',incomeReady],['readyRoster',rosterReady]]){
     const el=$(id); if(el) el.className='ready-chip'+(ok?' ready':'');
   }
+  for(const [tileId,statusId,ok] of [
+    ['setupOrg','setupOrgStatus',orgReady],
+    ['setupIncome','setupIncomeStatus',incomeReady],
+    ['setupRoster','setupRosterStatus',rosterReady]
+  ]){
+    const tile=$(tileId), status=$(statusId);
+    if(tile) tile.classList.toggle('ready',ok);
+    if(tile) tile.classList.toggle('pending',!ok);
+    if(status) status.textContent=ok?'준비 완료':'준비 필요';
+  }
+  const launchTile=$('setupLaunch');
+  if(launchTile){launchTile.classList.toggle('ready',allReady);launchTile.classList.toggle('pending',!allReady);}
   const launch=$('launchBtn');
   if(launch){
     launch.disabled=!allReady;
-    launch.textContent=state.launched?'준비 완료 ✓':'신고 준비 시작';
+    launch.textContent=state.launched?'준비 완료 ✓':(allReady?'신고 준비 시작':'준비 후 시작');
     launch.classList.toggle('launched',state.launched);
   }
   const ymReady=!!uiMonthToYM($('targetYM')?.value||'');
@@ -1018,7 +1109,7 @@ $('cfgFile').addEventListener('change',async e=>{
 $('toggleOrgDetails').addEventListener('click',()=>{
   const d=$('orgDetails'); const willOpen=d.classList.contains('collapsed');
   d.classList.toggle('collapsed');
-  $('toggleOrgDetails').textContent=willOpen?'기관정보 접기':'기관정보 펼치기';
+  $('toggleOrgDetails').textContent=willOpen?'입력 닫기':'직접 입력';
 });
 
 $('launchBtn').addEventListener('click',()=>{
