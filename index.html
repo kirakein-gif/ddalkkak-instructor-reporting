@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>딸깍 방과후강사 신고 · Ddalkkak Instructor Reporting</title>
+<title>딸깍 방과후강사+ 신고자료 · Ddalkkak Instructor Reporting</title>
 <link rel="icon" href="assets/icon.png" type="image/png">
 <style>
 :root{--bg:#f4f7fb;--card:#fff;--ink:#172033;--muted:#6c7890;--line:#e2e8f2;--blue:#2563eb;--blue2:#1d4ed8;--soft:#eef4ff;--green:#0f9f6e;--red:#dc3f45;--amber:#f2b93b;--shadow:0 12px 34px rgba(29,55,94,.08);--radius:20px}
@@ -613,6 +613,59 @@ th{font-size:13px}
   .foot{font-size:12.6px}
 }
 
+
+/* ===== Mixed instructor income classification · Web v2.1 ===== */
+.setup-tile.review{
+  background:#fff9e9!important;
+  border-color:#e8c56b!important;
+}
+.setup-tile.review .setup-status{
+  border-color:#e4bd55!important;
+  background:#fff1bd!important;
+  color:#845800!important;
+}
+.state-dot.warn{
+  background:#d99a16!important;
+  box-shadow:0 0 0 4px rgba(217,154,22,.14)!important;
+}
+.income-type-modal{width:min(720px,100%)}
+.income-type-icon{
+  width:34px;height:34px;border-radius:10px;background:#eaf2ff;color:#1f5fc8;
+  display:grid;place-items:center;font-size:22px;font-weight:900;margin-bottom:8px;
+}
+.income-type-modal h3{font-size:19px;color:#142d4a}
+.income-type-modal>p{font-size:13px;color:#405a75;line-height:1.6}
+.income-type-guide{
+  display:flex;gap:6px;flex-wrap:wrap;margin:-2px 0 12px;
+}
+.income-type-guide span{
+  border:1px solid #cfdae8;background:#f7faff;color:#4b617a;border-radius:999px;
+  padding:5px 8px;font-size:11.5px;font-weight:750;
+}
+.income-type-list{
+  max-height:340px;overflow:auto;border:1px solid #d2ddea;border-radius:12px;background:#fbfdff;
+}
+.income-type-row{
+  display:grid;grid-template-columns:minmax(160px,1fr) minmax(250px,1.45fr) 82px;
+  gap:10px;align-items:center;padding:11px 12px;border-bottom:1px solid #e5ebf2;
+}
+.income-type-row:last-child{border-bottom:0}
+.income-type-person b{display:block;font-size:14px;color:#17304d}
+.income-type-person span{display:block;margin-top:2px;font-size:11.5px;color:#61758c}
+.income-type-row select{
+  width:100%;min-height:38px;border:1px solid #bdccdd;border-radius:9px;
+  padding:7px 9px;background:#fff;color:#18324f;font-size:13px;font-weight:700;
+}
+.income-type-code{
+  text-align:center;border:1px solid #cfdae8;background:#eef4fb;color:#315374;
+  border-radius:8px;padding:7px 5px;font-size:12px;font-weight:900;
+}
+.income-type-code.labor{background:#e9f9f2;border-color:#a7d8c4;color:#087555}
+@media(max-width:680px){
+  .income-type-row{grid-template-columns:1fr}
+  .income-type-code{text-align:left}
+}
+
 </style>
 </head>
 <body>
@@ -623,10 +676,10 @@ th{font-size:13px}
       <div class="hero-copy">
         <p class="eyebrow">DDALKKAK INSTRUCTOR REPORTING</p>
         <div class="title-line">
-          <h1><span class="brand-pop">딸깍</span> <span class="brand-rest">방과후강사 신고자료</span></h1>
-          <button id="versionCheck" class="version-check title-version" type="button">WEB v2.0.1</button>
+          <h1><span class="brand-pop">딸깍</span> <span class="brand-rest">방과후강사+ 신고자료</span></h1>
+          <button id="versionCheck" class="version-check title-version" type="button">WEB v2.1</button>
         </div>
-        <p class="sub"><b>소득자료 엑셀 넣고, 딸깍.</b> 원천세 · 간이지급명세서 · 노무제공자 신고자료를 한 번에 생성합니다.</p>
+        <p class="sub"><b>소득자료 엑셀 넣고, 딸깍.</b> 방과후강사와 일반 사업소득 강사의 세무자료를 함께 처리하고, 노무신고는 대상자만 자동 분리합니다.</p>
       </div>
     </div>
     <div class="hero-meta">
@@ -671,7 +724,7 @@ th{font-size:13px}
             <div class="drop-main"><span class="file-mark">₩</span><div class="file-info"><b>소득자료 Excel</b><span id="incomeFileName">아직 선택하지 않음</span></div><span id="incomeState" class="state-dot"></span></div>
           </div>
           <div class="setup-sub">🔐 비밀번호는 메모리에서만 사용 · 원본 암호 유지</div>
-          <div class="inline-actions setup-actions"><button id="clearIncome" class="smallbtn">소득자료 비우기</button></div>
+          <div class="inline-actions setup-actions"><button id="reviewIncomeTypes" class="smallbtn hidden">유형 확인</button><button id="clearIncome" class="smallbtn">소득자료 비우기</button></div>
         </div>
 
         <div id="setupRoster" class="setup-tile pending">
@@ -790,6 +843,24 @@ th{font-size:13px}
     <div class="modal-actions"><button id="cancelOfficePw" class="smallbtn">취소</button><button id="unlockOfficePw" class="primary-small">암호 확인 후 불러오기</button></div>
   </div>
 </div>
+<div id="incomeTypeModal" class="modal hidden">
+  <div class="modalbox income-type-modal">
+    <div class="income-type-icon">＋</div>
+    <h3>기타자영업 유형 확인</h3>
+    <p>소득자료에 <b>기타자영업</b>으로 등록된 지급건이 있습니다. 실제 성격을 확인하면 세무신고 업종코드와 노무신고 포함 여부를 자동으로 나눕니다.</p>
+    <div class="income-type-guide">
+      <span>일반 강사·연수 → 세무신고만</span>
+      <span>기타 사업소득 → 세무신고만</span>
+      <span>방과후강사 → 세무 + 노무신고</span>
+    </div>
+    <div id="incomeTypeList" class="income-type-list"></div>
+    <div id="incomeTypeMsg" class="modalmsg"></div>
+    <div class="modal-actions">
+      <button id="laterIncomeTypes" class="smallbtn">나중에 확인</button>
+      <button id="saveIncomeTypes" class="primary-small">확인 완료</button>
+    </div>
+  </div>
+</div>
 <div id="toast" class="toast"></div>
 <script>
 /*!
@@ -811,7 +882,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
 'use strict';
 
-const APP_VERSION='2.0.1';
+const APP_VERSION='2.1';
 const APP_DEVELOPER='나대현';
 const APP_ORGANIZATION='천안버들유치원';
 
@@ -827,6 +898,7 @@ const state = {
   incomeEncryptedCount: 0,
   rosterEncrypted: false,
   launched: false,
+  pendingIncomeGroups: [],
 };
 
 const $ = (id) => document.getElementById(id);
@@ -1024,18 +1096,118 @@ async function readExcelSheet(file,password=''){
   return readZipSheet(file);
 }
 
+const INCOME_DETAIL_JOB_CODES={
+  '저술가':'940100',
+  '직업운동가':'940904',
+  '기타모집수당':'940911',
+  '기타모집수당·채권회수수당':'940911',
+  '자문,고문':'940600',
+  '자문·고문':'940600',
+  '학원강사':'940903',
+  '기타자영업':'940909',
+  '방과후강사':'940925',
+  '교육교구방문강사':'940921'
+};
+function normalizeIncomeDetail(v){
+  return String(v??'').trim().replace(/\s+/g,'');
+}
+function baseIncomeClassification(detail){
+  const key=normalizeIncomeDetail(detail);
+  const code=INCOME_DETAIL_JOB_CODES[key]||'';
+  if(key==='방과후강사') return {sourceKind:'afterschool',taxJobCode:'940925',laborIncluded:true,classificationConfirmed:true,classificationChoice:'afterschool',classificationLabel:'방과후강사'};
+  if(key==='기타자영업') return {sourceKind:'other_self_employed',taxJobCode:'940909',laborIncluded:false,classificationConfirmed:false,classificationChoice:'',classificationLabel:'유형 확인 필요'};
+  return {sourceKind:'tax_only',taxJobCode:code,laborIncluded:false,classificationConfirmed:true,classificationChoice:'source',classificationLabel:String(detail??'').trim()||'사업소득'};
+}
+function rowTaxJobCode(r,c){
+  return digits(r.taxJobCode||'').slice(0,6) || digits(c.jobCode||'').slice(0,6) || '940925';
+}
+function isLaborReportRow(r){
+  return r.laborIncluded===true;
+}
+function unresolvedOtherBizCount(){
+  return state.incomes.filter(r=>r.sourceKind==='other_self_employed'&&!r.classificationConfirmed).length;
+}
+function getOtherBizGroups(){
+  const map=new Map();
+  state.incomes.forEach((r,idx)=>{
+    if(r.sourceKind!=='other_self_employed') return;
+    const key=r.name+'|'+enc6(r.maskedJumin);
+    if(!map.has(key)) map.set(key,{key,name:r.name,maskedJumin:r.maskedJumin,indexes:[],pay:0,choice:r.classificationChoice||''});
+    const g=map.get(key); g.indexes.push(idx); g.pay+=num(r.pay);
+    if(r.classificationChoice) g.choice=r.classificationChoice;
+  });
+  return [...map.values()];
+}
+function applyOtherBizChoice(group,choice){
+  const cfg={
+    general_lecture:{taxJobCode:'940909',laborIncluded:false,label:'일반 강사·연수'},
+    other_business:{taxJobCode:'940909',laborIncluded:false,label:'기타 사업소득'},
+    afterschool:{taxJobCode:'940925',laborIncluded:true,label:'방과후강사'}
+  }[choice]||null;
+  if(!cfg) return;
+  group.indexes.forEach(idx=>{
+    const r=state.incomes[idx];
+    if(!r) return;
+    r.taxJobCode=cfg.taxJobCode;
+    r.laborIncluded=cfg.laborIncluded;
+    r.classificationConfirmed=true;
+    r.classificationChoice=choice;
+    r.classificationLabel=cfg.label;
+  });
+}
+function renderIncomeTypeModal(){
+  const groups=getOtherBizGroups();
+  state.pendingIncomeGroups=groups;
+  const list=$('incomeTypeList');
+  if(!groups.length){ $('incomeTypeModal').classList.add('hidden'); return; }
+  list.innerHTML=groups.map((g,i)=>{
+    const current=g.choice||'general_lecture';
+    const code=current==='afterschool'?'940925':'940909';
+    const labor=current==='afterschool';
+    return `<div class="income-type-row">
+      <div class="income-type-person"><b>${esc(g.name)}</b><span>기타자영업 · 지급액 ${fmt.format(g.pay)}원</span></div>
+      <select data-income-group="${i}">
+        <option value="general_lecture"${current==='general_lecture'?' selected':''}>일반 강사·연수 (세무신고만)</option>
+        <option value="other_business"${current==='other_business'?' selected':''}>기타 사업소득 (세무신고만)</option>
+        <option value="afterschool"${current==='afterschool'?' selected':''}>방과후강사로 처리 (노무신고 포함)</option>
+      </select>
+      <span class="income-type-code${labor?' labor':''}" data-income-code="${i}">${code}</span>
+    </div>`;
+  }).join('');
+  [...list.querySelectorAll('select[data-income-group]')].forEach(sel=>{
+    sel.addEventListener('change',()=>{
+      const i=+sel.dataset.incomeGroup;
+      const codeEl=list.querySelector('[data-income-code="'+i+'"]');
+      const labor=sel.value==='afterschool';
+      if(codeEl){codeEl.textContent=labor?'940925':'940909';codeEl.classList.toggle('labor',labor);}
+    });
+  });
+  $('incomeTypeMsg').textContent='';
+  $('incomeTypeModal').classList.remove('hidden');
+}
+function maybeAskOtherBiz(){
+  if(getOtherBizGroups().some(g=>g.indexes.some(idx=>!state.incomes[idx]?.classificationConfirmed))){
+    renderIncomeTypeModal();
+    return true;
+  }
+  return false;
+}
+
 function parseIncomeRows(rows, fileName) {
   const out=[];
   for(const r of rows) {
     if((r._row||0) < 4) continue;
     const name=String(r[3]??'').trim();
     if(!name) continue;
+    const incomeDetail=String(r[2]??'').trim();
+    const cls=baseIncomeClassification(incomeDetail);
     out.push({
       sourceFile:fileName, sourceRow:r._row,
-      status:r[0]??'', incomeType:r[1]??'', incomeDetail:r[2]??'',
+      status:r[0]??'', incomeType:r[1]??'', incomeDetail,
       name, maskedJumin:String(r[4]??'').trim(), ym:normalizeYMValue(r[5]), payDate:r[6]??'',
       pay:num(r[7]), expense:num(r[8]), income:num(r[9]), rate:num(r[10]), tax:num(r[11]), localTax:num(r[12]),
-      account:r[13]??'', dept:r[14]??''
+      account:r[13]??'', dept:r[14]??'',
+      ...cls
     });
   }
   return out;
@@ -1077,7 +1249,9 @@ function institutionReady(){
 function updateLaunchState(resetLaunch=false){
   if(resetLaunch) state.launched=false;
   const orgReady=institutionReady();
-  const incomeReady=state.incomes.length>0;
+  const unresolvedOther=unresolvedOtherBizCount();
+  const incomeLoaded=state.incomes.length>0;
+  const incomeReady=incomeLoaded&&unresolvedOther===0;
   const rosterReady=state.roster.length>0;
   const allReady=orgReady&&incomeReady&&rosterReady;
   for(const [id,ok] of [['readyOrg',orgReady],['readyIncome',incomeReady],['readyRoster',rosterReady]]){
@@ -1091,7 +1265,13 @@ function updateLaunchState(resetLaunch=false){
     const tile=$(tileId), status=$(statusId);
     if(tile) tile.classList.toggle('ready',ok);
     if(tile) tile.classList.toggle('pending',!ok);
+    if(tile) tile.classList.remove('review');
     if(status) status.textContent=ok?'준비 완료':'준비 필요';
+  }
+  if(incomeLoaded&&unresolvedOther>0){
+    const tile=$('setupIncome'),status=$('setupIncomeStatus');
+    if(tile){tile.classList.remove('ready','pending');tile.classList.add('review');}
+    if(status) status.textContent='유형 확인 '+unresolvedOther+'건';
   }
   const launchTile=$('setupLaunch');
   if(launchTile){launchTile.classList.toggle('ready',allReady);launchTile.classList.toggle('pending',!allReady);}
@@ -1111,8 +1291,15 @@ function updateLaunchState(resetLaunch=false){
   $('generateBtn').disabled=!finalReady;
 }
 function renderStatus(resetLaunch=false) {
-  $('incomeFileName').textContent = state.sourceFiles.length ? `${state.sourceFiles.length}개 파일 · ${state.incomes.length}건${state.incomeEncryptedCount?' · 🔒 암호화 '+state.incomeEncryptedCount+'개':''}` : '아직 선택하지 않음';
-  $('incomeState').className='state-dot '+(state.incomes.length?'ok':'');
+  const otherGroups=getOtherBizGroups();
+  const unresolvedOther=unresolvedOtherBizCount();
+  $('incomeFileName').textContent = state.sourceFiles.length ? `${state.sourceFiles.length}개 파일 · ${state.incomes.length}건${state.incomeEncryptedCount?' · 🔒 암호화 '+state.incomeEncryptedCount+'개':''}${otherGroups.length?' · 기타자영업 '+otherGroups.length+'명':''}` : '아직 선택하지 않음';
+  $('incomeState').className='state-dot '+(state.incomes.length?(unresolvedOther?'warn':'ok'):'');
+  const reviewBtn=$('reviewIncomeTypes');
+  if(reviewBtn){
+    reviewBtn.classList.toggle('hidden',otherGroups.length===0);
+    reviewBtn.textContent=unresolvedOther?'유형 확인 '+unresolvedOther+'건':'유형 수정';
+  }
   $('rosterFileName').textContent = state.roster.length ? `${state.rosterFile || '강사명단'} · ${state.roster.length}명${state.rosterEncrypted?' · 🔒 암호화':''}` : '아직 선택하지 않음';
   $('rosterState').className='state-dot '+(state.roster.length?'ok':'');
   const miss=state.incomes.length&&state.roster.length?rosterCheck():[];
@@ -1143,7 +1330,8 @@ async function processIncomeFiles(files,password=''){
   state.incomeEncryptedCount+=encryptedFlags.filter(Boolean).length;
   refreshDetectedMonths();
   renderStatus(true);
-  toast(`${added.length}건을 불러왔습니다.`,'success');
+  if(maybeAskOtherBiz()) toast(`${added.length}건을 불러왔습니다. 기타자영업 유형을 확인해주세요.`,'info');
+  else toast(`${added.length}건을 불러왔습니다.`,'success');
 }
 async function processRosterExcel(file,password=''){
   const encrypted=await isEncryptedOfficeFile(file);
@@ -1228,8 +1416,30 @@ $('unlockOfficePw').addEventListener('click',async()=>{
   }
 });
 
+$('reviewIncomeTypes').addEventListener('click',renderIncomeTypeModal);
+$('laterIncomeTypes').addEventListener('click',()=>{
+  $('incomeTypeModal').classList.add('hidden');
+  state.pendingIncomeGroups=[];
+  renderStatus(true);
+  toast('기타자영업 유형 확인 전에는 신고 준비를 시작할 수 없습니다.','info');
+});
+$('saveIncomeTypes').addEventListener('click',()=>{
+  const groups=state.pendingIncomeGroups||[];
+  if(!groups.length){$('incomeTypeModal').classList.add('hidden');return;}
+  const selects=[...$('incomeTypeList').querySelectorAll('select[data-income-group]')];
+  selects.forEach(sel=>{
+    const g=groups[+sel.dataset.incomeGroup];
+    if(g) applyOtherBizChoice(g,sel.value);
+  });
+  state.pendingIncomeGroups=[];
+  $('incomeTypeModal').classList.add('hidden');
+  state.launched=false;
+  renderStatus(true);
+  toast('기타자영업 유형을 반영했습니다.','success');
+});
+
 $('clearIncome').addEventListener('click',()=>{
-  state.incomes=[];state.sourceFiles=[];state.detectedMonths=[];state.incomeEncryptedCount=0;state.launched=false;
+  state.incomes=[];state.sourceFiles=[];state.detectedMonths=[];state.incomeEncryptedCount=0;state.pendingIncomeGroups=[];state.launched=false;
   $('targetYM').value='';refreshDetectedMonths();renderStatus(true);toast('소득자료를 비웠습니다.');
 });
 $('clearRoster').addEventListener('click',()=>{
@@ -1238,7 +1448,7 @@ $('clearRoster').addEventListener('click',()=>{
 });
 $('wipeAll').addEventListener('click',()=>{
   state.incomes=[];state.roster=[];state.sourceFiles=[];state.rosterFile='';state.detectedMonths=[];
-  state.incomeEncryptedCount=0;state.rosterEncrypted=false;state.launched=false;state.pendingOffice=null;
+  state.incomeEncryptedCount=0;state.rosterEncrypted=false;state.pendingIncomeGroups=[];state.launched=false;state.pendingOffice=null;
   clearOutputs();$('targetYM').value='';refreshDetectedMonths();renderStatus(true);
   toast('불러온 개인정보와 작업 데이터를 모두 비웠습니다.','success');
 });
@@ -1530,7 +1740,7 @@ function buildGanyiTxt(c,ym) {
   if(byteLen(b)!==170) throw new Error(`간이지급명세서 B레코드 길이 오류: ${byteLen(b)}바이트`);
   const lines=[a,b];
   rows.forEach((r,i)=>{
-    let s=bytePad('C',1)+bytePad('50',2)+bytePad(c.taxOffice,3)+numPad(i+1,7)+bytePad(c.bizNo,10)+bytePad(c.jobCode,6)+bytePad(r.staff.realName,30);
+    let s=bytePad('C',1)+bytePad('50',2)+bytePad(c.taxOffice,3)+numPad(i+1,7)+bytePad(c.bizNo,10)+bytePad(rowTaxJobCode(r,c),6)+bytePad(r.staff.realName,30);
     s+=bytePad(r.staff.jumin,13)+bytePad('1',1)+bytePad('',2)+bytePad('',4)+bytePad(gyYear,4)+bytePad('',4)+numPad(r.pay,13)+numPad(3,2)+numPad(r.tax,13)+numPad(r.localTax,13)+bytePad(gyMon,2)+bytePad('',40);
     if(byteLen(s)!==170) throw new Error(`간이지급명세서 C레코드 길이 오류(${r.staff.realName}): ${byteLen(s)}바이트`);
     lines.push(s);
@@ -1539,11 +1749,11 @@ function buildGanyiTxt(c,ym) {
 }
 function ganyiXlsxRows(c,ym) {
   const rows=[['일련번호','귀속연도','귀속월','업종코드','소득자성명(상호)','주민(사업자)등록번호','내외국인','지급액','세율','소득세','지방소득세']];
-  let i=0; for(const r of state.incomes){if(!r.name)continue; const s=lookupStaff(r.name,r.maskedJumin);if(!s)throw new Error(`${r.name}: 강사명단 미등록`);i++;rows.push([i,+ym.slice(0,4),ym.slice(4,6),+c.jobCode,s.realName,s.jumin,1,vbaCLng(r.pay),3,vbaCLng(r.tax),vbaCLng(r.localTax)]);} return rows;
+  let i=0; for(const r of state.incomes){if(!r.name)continue; const s=lookupStaff(r.name,r.maskedJumin);if(!s)throw new Error(`${r.name}: 강사명단 미등록`);i++;rows.push([i,+ym.slice(0,4),ym.slice(4,6),+rowTaxJobCode(r,c),s.realName,s.jumin,1,vbaCLng(r.pay),3,vbaCLng(r.tax),vbaCLng(r.localTax)]);} return rows;
 }
 function nomooRows(c,ym) {
   const rows=[[],['보험구분','성명','주민번호','직종부호','자격취득일','월보수액']];
-  for(const r of state.incomes){if(!r.name)continue;const s=lookupStaff(r.name,r.maskedJumin);if(!s)throw new Error(`${r.name}: 강사명단 미등록`);const rate=getExpenseRate(ym,c.jobCode);const monthPay=vbaCLng(r.pay*(1-rate/100));rows.push(['1',s.realName,s.jumin,'981',ym+'01',monthPay]);} return rows;
+  for(const r of state.incomes){if(!r.name||!isLaborReportRow(r))continue;const s=lookupStaff(r.name,r.maskedJumin);if(!s)throw new Error(`${r.name}: 강사명단 미등록`);const rate=getExpenseRate(ym,'940925');const monthPay=vbaCLng(r.pay*(1-rate/100));rows.push(['1',s.realName,s.jumin,'981',ym+'01',monthPay]);} return rows;
 }
 
 function contentTypesXml(){return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`;}
@@ -1603,7 +1813,7 @@ function renderOutputs(c,ym) {
   [...$('outputList').querySelectorAll('button')].forEach(b=>b.addEventListener('click',()=>{const o=state.outputs[+b.dataset.i];downloadBytes(o.bytes,o.name,o.mime);}));
 }
 $('zipAll').addEventListener('click',async()=>{
-  if(!state.outputs.length)return;const z=new JSZip();state.outputs.forEach(o=>z.file(o.name,o.bytes));const bytes=new Uint8Array(await z.generateAsync({type:'arraybuffer',compression:'DEFLATE'}));downloadBytes(bytes,`딸깍_방과후강사_신고자료_${uiMonthToYM($('targetYM').value)||today8().slice(0,6)}.zip`,'application/zip');
+  if(!state.outputs.length)return;const z=new JSZip();state.outputs.forEach(o=>z.file(o.name,o.bytes));const bytes=new Uint8Array(await z.generateAsync({type:'arraybuffer',compression:'DEFLATE'}));downloadBytes(bytes,`딸깍_방과후강사플러스_신고자료_${uiMonthToYM($('targetYM').value)||today8().slice(0,6)}.zip`,'application/zip');
 });
 function clearOutputs(){state.outputs=[];$('outputBox').classList.add('hidden');$('outputList').innerHTML='';}
 function downloadBytes(bytes,name,mime='application/octet-stream') { const blob=new Blob([bytes],{type:mime});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000); }
